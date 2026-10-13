@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Digest</string>
+
+    <!-- Condición y afectación -->
+    <string name="condicion_colitis_ulcerosa">Colitis ulcerosa</string>
+    <string name="condicion_crohn">Enfermedad de Crohn</string>
+    <string name="condicion_indeterminada">Colitis indeterminada</string>
+
+    <string name="afectacion_proctitis">Proctitis</string>
+    <string name="afectacion_colitis_izquierda">Colitis izquierda</string>
+    <string name="afectacion_colitis_extensa">Colitis extensa</string>
+    <string name="afectacion_pancolitis">Pancolitis</string>
+    <string name="afectacion_ileitis">Íleitis (íleon)</string>
+    <string name="afectacion_ileocolitis">Íleo-colítica</string>
+    <string name="afectacion_colitis_crohn">Colitis de Crohn</string>
+    <string name="afectacion_gastroduodenal">Gastroduodenal</string>
+    <string name="afectacion_perianal">Perianal</string>
+
+    <!-- Categorías de síntomas -->
+    <string name="categoria_intestinal">Intestinales</string>
+    <string name="categoria_perianal">Perianales</string>
+    <string name="categoria_general">Generales</string>
+    <string name="categoria_extraintestinal">Extraintestinales</string>
+
+    <!-- Síntomas -->
+    <string name="sintoma_diarrea">Diarrea</string>
+    <string name="sintoma_dolor_abdominal">Dolor abdominal</string>
+    <string name="sintoma_tenesmo">Tenesmo (ganas de ir sin poder)</string>
+    <string name="sintoma_sangre">Sangre en heces</string>
+    <string name="sintoma_mucosidad">Mucosidad</string>
+    <string name="sintoma_distension">Distensión / hinchazón</string>
+    <string name="sintoma_fisura">Fisura anal</string>
+    <string name="sintoma_fistula">Fístula anal</string>
+    <string name="sintoma_absceso">Absceso perianal</string>
+    <string name="sintoma_dolor_supuracion">Dolor o supuración perianal</string>
+    <string name="sintoma_inflamacion_externa">Inflamación externa perianal</string>
+    <string name="sintoma_fatiga">Fatiga / astenia</string>
+    <string name="sintoma_fiebre">Fiebre o febrícula</string>
+    <string name="sintoma_nauseas">Náuseas</string>
+    <string name="sintoma_perdida_apetito">Pérdida de apetito</string>
+    <string name="sintoma_perdida_peso">Pérdida de peso</string>
+    <string name="sintoma_desnutricion">Desnutrición</string>
+    <string name="sintoma_afta_bucal">Aftas en la boca</string>
+    <string name="sintoma_dolor_articular">Dolor articular</string>
+    <string name="sintoma_manchas_piel">Manchas en la piel</string>
+    <string name="sintoma_uveitis">Ojo rojo / uveítis</string>
+
+    <!-- Escala de Bristol -->
+    <string name="bristol_1">1 · Heces duras sueltas</string>
+    <string name="bristol_1_desc">Trozos separados y duros, como nueces. Estreñimiento.</string>
+    <string name="bristol_2">2 · En forma de salchicha grumosa</string>
+    <string name="bristol_2_desc">Agrupadas pero irregulares, como una salchicha grumosa.</string>
+    <string name="bristol_3">3 · Salchicha con grietas</string>
+    <string name="bristol_3_desc">Como una salchicha pero con grietas en la superficie. Normal.</string>
+    <string name="bristol_4">4 · Suave y lisa</string>
+    <string name="bristol_4_desc">Como una serpiente, suave y lisa. Ideal.</string>
+    <string name="bristol_5">5 · Trozos blandos con bordes</string>
+    <string name="bristol_5_desc">Trozos blandos con bordes definidos. Ligera diarrea.</string>
+    <string name="bristol_6">6 · Trozos blandos deshilachados</string>
+    <string name="bristol_6_desc">Blandos, con bordes deshilachados, aspecto de papilla.</string>
+    <string name="bristol_7">7 · Líquidas, sin trozos</string>
+    <string name="bristol_7_desc">Totalmente líquidas, sin restos sólidos. Diarrea severa.</string>
+
+    <!-- Sangre -->
+    <string name="sangre_ninguna">Ninguna</string>
+    <string name="sangre_ligera">Ligera</string>
+    <string name="sangre_moderada">Moderada</string>
+    <string name="sangre_abundante">Abundante</string>
+
+    <!-- Dolor -->
+    <string name="dolor_colico">Cólico</string>
+    <string name="dolor_colico_pista">Va y viene en forma de retortijón, suele calmarse al defecar.</string>
+    <string name="dolor_fijo">Fijo</string>
+    <string name="dolor_fijo_pista">Continuo, no cede. Puede indicar inflamación localizada o estenosis.</string>
+    <string name="dolor_punzante">Punzante</string>
+    <string name="dolor_punzante_pista">Como un pinchazo puntual.</string>
+    <string name="dolor_presivo">Presivo</string>
+    <string name="dolor_presivo_pista">Tensión o pesadez en el abdomen.</string>
+
+    <string name="dolor_epigastrio">Epigastrio (estómago)</string>
+    <string name="dolor_hipocondrio_izq">Hipocondrio izquierdo</string>
+    <string name="dolor_periumbilical">Periumbilical (alrededor del ombligo)</string>
+    <string name="dolor_hipocondrio_der">Hipocondrio derecho</string>
+    <string name="dolor_fosa_iliaca_izq">Fosa ilíaca izquierda</string>
+    <string name="dolor_fosa_iliaca_der">Fosa ilíaca derecha (típica de Crohn)</string>
+    <string name="dolor_pelvica">Pélvica</string>
+    <string name="dolor_lumbar">Lumbar (espalda baja)</string>
+    <string name="dolor_difusa">Difusa (todo el abdomen)</string>
+
+    <!-- Cirugías -->
+    <string name="cirugia_ileocecal">Resección ileocecal</string>
+    <string name="cirugia_reseccion_ileal">Resección ileal</string>
+    <string name="cirugia_hemicolectomia">Hemicolectomía</string>
+    <string name="cirugia_colectomia">Colectomía</string>
+    <string name="cirugia_ileostomia">Ileostomía (ostomía de íleon)</string>
+    <string name="cirugia_colostomia">Colostomía (ostomía de colon)</string>
+    <string name="cirugia_drenaje_absceso">Drenaje de absceso</string>
+    <string name="cirugia_estenoplastia">Estenoplastia / dilatación</string>
+    <string name="cirugia_otras">Otras</string>
+
+    <!-- Medicamento -->
+    <string name="presentacion_medicamento">Medicamento</string>
+    <string name="presentacion_suplemento">Suplemento</string>
+    <string name="via_oral">Oral</string>
+    <string name="via_rectal">Rectal</string>
+    <string name="via_subcutanea">Subcutánea (inyectable)</string>
+    <string name="via_intravenosa">Intravenosa (hospital)</string>
+
+    <string name="estado_pendiente">Pendiente</string>
+    <string name="estado_tomada">Tomada</string>
+    <string name="estado_omitida">Omitida</string>
+    <string name="estado_retrasada">Retrasada</string>
+
+    <string name="grupo_aminosalicilato">Aminosalicilatos (5-ASA)</string>
+    <string name="grupo_corticoide">Corticoides</string>
+    <string name="grupo_inmunosupresor">Inmunosupresores</string>
+    <string name="grupo_biologico">Biológicos</string>
+    <string name="grupo_peptido_analogo">Análogos del péptido GLP-1</string>
+    <string name="grupo_pequena_molecula">Pequeñas moléculas (JAK)</string>
+    <string name="grupo_antidiarreico">Antidiarreicos</string>
+    <string name="grupo_analgesico">Analgésicos</string>
+    <string name="grupo_suplemento">Suplementos</string>
+    <string name="grupo_otro">Otros</string>
+
+    <!-- Comidas y dieta -->
+    <string name="comida_desayuno">Desayuno</string>
+    <string name="comida_media_manana">Media mañana</string>
+    <string name="comida_almuerzo">Almuerzo</string>
+    <string name="comida_merienda">Merienda</string>
+    <string name="comida_cena">Cena</string>
+    <string name="comida_nocturno">Tarde / nocturno</string>
+
+    <string name="enteral_exclusiva">Nutrición enteral exclusiva</string>
+    <string name="enteral_parcial">Nutrición enteral parcial</string>
+    <string name="enteral_suplemento">Fórmula como suplemento</string>
+
+    <string name="hidratacion_normal">Normal</string>
+    <string name="hidratacion_insuficiente">Bebí menos de lo debido</string>
+    <string name="hidratacion_excesiva">Bebí mucho más</string>
+    <string name="hidratacion_no_aplica">No me aplica</string>
+
+    <string name="dieta_libre">Dieta libre</string>
+    <string name="dieta_sin_gluten">Sin gluten</string>
+    <string name="dieta_baja_fodmap">Baja en FODMAP</string>
+    <string name="dieta_vegetariana">Vegetariana o vegana</string>
+    <string name="dieta_sin_lactosa">Sin lactosa</string>
+    <string name="dieta_enteral">Nutrición enteral</string>
+    <string name="dieta_otra">Otra</string>
+
+    <!-- Diario -->
+    <string name="mejora_sin">Sin mejoras</string>
+    <string name="mejora_poca">Con poca mejora</string>
+    <string name="mejora_clara">Mejora clara</string>
+    <string name="mejora_gran">Con gran mejora</string>
+    <string name="mejora_empeora">Me está empeorando</string>
+    <string name="mejora_no_aplica">No me aplica</string>
+
+    <string name="sensacion_muy_bien">Muy bien</string>
+    <string name="sensacion_bien">Bien</string>
+    <string name="sensacion_regular">Regular</string>
+    <string name="sensacion_mal">Mal</string>
+    <string name="sensacion_muy_mal">Muy mal</string>
+
+    <string name="brote_remision">En remisión</string>
+    <string name="brote_leve">Brote leve</string>
+    <string name="brote_moderado">Brote moderado</string>
+    <string name="brote_severo">Brote severo</string>
+    <string name="brote_no_aplica">No me aplica</string>
+</resources>
