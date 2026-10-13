@@ -61,9 +61,10 @@ class Converters {
     fun longToInstant(valor: Long?): Instant? = valor?.let(Instant::ofEpochMilli)
 
     // --- Listas de enums ---
+    // Devuelven cadena vacía en lugar de `null` cuando la lista está vacía:
+    // las columnas de lista son NOT NULL e insertar `null` provocaría un fallo.
     @TypeConverter
-    fun listaToString(valores: List<String>?): String? =
-        valores?.takeIf { it.isNotEmpty() }?.joinToString(SEPARADOR)
+    fun listaToString(valores: List<String>?): String? = valores?.joinToString(SEPARADOR)
 
     @TypeConverter
     fun stringToLista(valor: String?): List<String>? =
@@ -72,7 +73,7 @@ class Converters {
     /** El paciente puede tener más de una zona afectada (p. ej. íleo + perianal). */
     @TypeConverter
     fun afectacionesToString(valores: List<Afectacion>?): String? =
-        valores?.map { it.name }?.takeIf { it.isNotEmpty() }?.joinToString(SEPARADOR)
+        valores?.joinToString(SEPARADOR) { it.name }
 
     @TypeConverter
     fun stringToAfectaciones(valor: String?): List<Afectacion> =

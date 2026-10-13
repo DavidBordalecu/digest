@@ -24,7 +24,7 @@ data class PerfilEntity(
     /** Puede haber más de una zona afectada (p. ej. íleo + perianal). */
     val afectaciones: List<Afectacion>,
 
-    val fechaDiagnostico: LocalDate?,
+    val fechaDiagnostico: LocalDate? = null,
 
     // --- Peso y altura ---
     val pesoKg: Double?,
@@ -59,13 +59,13 @@ data class PerfilEntity(
 }
 
 /**
- * Una intervención quirúrgica del historial.
+ * Historial quirúrgico: relevante sobre todo en Crohn.
  */
 @Entity(tableName = "cirugias")
 data class CirugiaEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val tipo: TipoCirugia,
-    val fecha: LocalDate?,
+    val fecha: LocalDate? = null,
     val hospital: String? = null,
     val notas: String? = null,
 )

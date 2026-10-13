@@ -24,6 +24,7 @@ class DigestApplication : Application() {
 
         repositorio = DigestRepository(
             perfilDao = baseDatos.perfilDao(),
+            cirugiaDao = baseDatos.cirugiaDao(),
             medicamentoDao = baseDatos.medicamentoDao(),
             horarioDao = baseDatos.horarioDao(),
             tomaDao = baseDatos.tomaDao(),

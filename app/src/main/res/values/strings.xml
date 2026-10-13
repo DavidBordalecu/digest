@@ -174,8 +174,92 @@
     <string name="canal_urgente">Tomas pendientes</string>
     <string name="canal_urgente_desc">Aviso de una toma que se ha pasado de hora.</string>
     <string name="aviso_titulo">Toma de %1$s</string>
-    <string name="aviso_cuerpo">Te toca tomarlo (%1$s)%2$s</string>
+    <string name="aviso_cuerpo">Te toca tomarlo a las %1$s%2$s</string>
     <string name="medicamento_sin_nombre">medicamento</string>
     <string name="accion_tomar">Tomada</string>
     <string name="accion_omitir">Omitir</string>
+
+    <!-- Barra inferior -->
+    <string name="seccion_hoy">Hoy</string>
+    <string name="seccion_medicamentos">Medicación</string>
+    <string name="seccion_comidas">Comidas</string>
+    <string name="seccion_diario">Diario</string>
+    <string name="seccion_perfil">Perfil</string>
+
+    <!-- Bienvenida -->
+    <string name="bienvenida_titulo">Digest</string>
+    <string name="bienvenida_subtitulo">Tu diario de medicación, comidas y síntomas para la enfermedad inflamatoria intestinal.</string>
+    <string name="bienvenida_condicion">¿Cuál es tu diagnóstico?</string>
+    <string name="bienvenida_cu_desc">Afecta al colon y al recto.</string>
+    <string name="bienvenida_crohn_desc">Puede afectar a cualquier parte del tubo digestivo.</string>
+    <string name="bienvenida_indeterminada_desc">No está claro si es colitis o Crohn.</string>
+    <string name="bienvenida_fecha_diagnostico">Año del diagnóstico</string>
+    <string name="bienvenida_peso">Peso</string>
+    <string name="bienvenida_altura">Altura</string>
+    <string name="bienvenida_afectacion">¿Qué zona está afectada?</string>
+    <string name="bienvenida_diagnostico_quirurgico">Antecedentes quirúrgicos</string>
+    <string name="bienvenida_diagnostico_quirurgico_ayuda">Una resección o una ostomía cambian el tránsito intestinal, y con él lo que debes anotar.</string>
+    <string name="bienvenida_ileostomia_colostomia">Tengo una ostomía o una resección intestinal</string>
+    <string name="bienvenida_empezar">Empezar</string>
+
+    <!-- Permisos -->
+    <string name="permisos_titulo">Activa los avisos</string>
+    <string name="permisos_sin_avisos">Sin permiso de notificaciones no recibirás los avisos de hora de toma.</string>
+    <string name="permisos_sin_alarma_exacta">Sin permiso de alarma exacta los avisos pueden llegar con retraso.</string>
+    <string name="permisos_abrir_ajustes">Abrir ajustes</string>
+
+    <!-- Hoy -->
+    <string name="hoy_te_toca">Ahora te toca</string>
+    <string name="hoy_te_esta_pasando">Se te está pasando</string>
+    <string name="hoy_marcar_tomada">Ya la he tomado</string>
+    <string name="hoy_tomada">Tomada</string>
+    <string name="hoy_reponer">Deshacer</string>
+    <string name="hoy_tomas">Tomas de hoy</string>
+    <string name="hoy_tomas_vencidas">%1$d sin tomar</string>
+    <string name="hoy_sin_tomas">Aún no tienes medicación programada</string>
+    <string name="hoy_sin_tomas_detalle">Añádela en la pestaña Medicación para empezar a recibir avisos.</string>
+    <string name="hoy_comidas">Comidas de hoy</string>
+    <string name="hoy_sin_comidas">Todavía no has registrado ninguna comida</string>
+    <string name="hoy_sintomas">¿Cómo estás hoy?</string>
+
+    <!-- Medicamentos -->
+    <string name="medicamentos_vacio">No hay medicación registrada</string>
+    <string name="medicamentos_vacio_detalle">Pulsa + para añadir tu primer fármaco o suplemento.</string>
+    <string name="medicamentos_sin_horario">Sin horario</string>
+
+    <!-- Comidas -->
+    <string name="comidas_vacio">Sin comidas registradas</string>
+    <string name="comidas_vacio_detalle">Anotar lo que comes ayuda a ver qué alimentos se relacionan con los síntomas.</string>
+
+    <!-- Diario -->
+    <string name="diario_mejora">¿La medicación te está mejorando?</string>
+    <string name="diario_sensacion">¿Cómo te sientes en general?</string>
+    <string name="diario_brote">Estado del brote</string>
+    <string name="diario_hidratacion">Hidratación</string>
+    <string name="diario_notas">Notas del día</string>
+
+    <!-- Perfil -->
+    <string name="perfil_condicion">Condición</string>
+    <string name="perfil_tiene_estomia">Tienes una ostomía registrada</string>
+    <string name="perfil_medidas">Peso y altura</string>
+    <string name="perfil_imc">IMC: %1$.1f</string>
+    <string name="perfil_guardar">Guardar medidas</string>
+    <string name="perfil_cirugias">Cirugías</string>
+    <string name="perfil_cirugias_ayuda">Una resección ileocecal o una ostomía cambian el tránsito intestinal y las necesidades de hidratación.</string>
+    <string name="perfil_cirugias_vacio">No hay intervenciones registradas.</string>
+    <string name="perfil_agregar_cirugia">Añadir intervención</string>
+
+    <!-- Editor de medicación -->
+    <string name="editor_titulo">Nueva medicación</string>
+    <string name="editor_nombre">Nombre del fármaco</string>
+    <string name="editor_dosis">Dosis</string>
+    <string name="editor_dosis_ejemplo">2,5 g · 1 comprimido</string>
+    <string name="editor_instrucciones">Indicaciones</string>
+    <string name="editor_instrucciones_ejemplo">Con comida · En ayunas</string>
+    <string name="editor_hora">Hora de la toma</string>
+    <string name="editor_elegir_hora">Elegir hora</string>
+    <string name="editor_dias">Días</string>
+    <string name="editor_todos_los_dias">Por defecto, todos los días</string>
+    <string name="editor_guardar">Guardar</string>
+    <string name="editor_cancelar">Cancelar</string>
 </resources>

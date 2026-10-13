@@ -29,14 +29,16 @@ object PlanificadorAlarmas {
     val MARGEN_RETRASO: Duration = Duration.ofMinutes(20)
 
     /**
-     * Programa los avisos de todas las tomas de un día.
+     * Programa los avisos de todas las tomas pendientes que aún no han pasado.
      *
-     * Se llama al abrir la app, al modificar un horario y tras un reinicio.
+     * Se llama al abrir la app, al entrar en la pantalla de hoy, al modificar
+     * un horario y tras un reinicio. Es idempotente: reprogramar la misma
+     * alarma con el mismo identificador la sustituye en lugar de duplicarla.
      */
     suspend fun programar(context: Context, repositorio: DigestRepository) {
         val hoy = LocalDate.now()
-        val zonasHorarias = avisosDeHoy(context, repositorio, hoy)
-        for ((tomaId, instante) in zonasHorarias) {
+        val avisos = avisosDeHoy(repositorio, hoy)
+        for ((tomaId, instante) in avisos) {
             programarAviso(context, tomaId, instante, retrasado = false)
             programarAviso(
                 context = context,
@@ -45,26 +47,26 @@ object PlanificadorAlarmas {
                 retrasado = true,
             )
         }
-        Log.i(TAG, "Programados ${zonasHorarias.size} avisos hasta $hoy")
+        Log.i(TAG, "Programados ${avisos.size} avisos para $hoy")
     }
 
     /**
-     * Calcula los instantes en que debe saltar cada aviso de hoy.
+     * Instantes en los que debe saltar el aviso de cada toma pendiente.
      *
-     * Solo se generan los que aún no han pasado: programar una alarma en el
-     * pasado la hace dispararse de inmediato, que es justo lo que hay que
-     * evitar al abrir la app a mediodía.
+     * Se recorren todas las tomas pendientes del día, no solo las creadas en
+     * esta pasada: un medicamento añadido ayer ya tiene su toma de hoy, y si
+     * solo se miraran las nuevas se quedaría sin alarma.
+     *
+     * Las tomas cuya hora ya pasó se descartan: programar una alarma en el
+     * pasado hace que Android la dispare de inmediato, que es justo lo que
+     * hay que evitar al abrir la app a mediodía.
      */
     private suspend fun avisosDeHoy(
-        context: Context,
         repositorio: DigestRepository,
         fecha: LocalDate,
     ): List<Pair<Long, LocalDateTime>> {
-        val horarios = repositorio.horariosDeHoy(fecha)
-        val creadas = repositorio.materializarTomasDelDia(fecha, horarios)
         val ahora = LocalDateTime.now()
-
-        return creadas
+        return repositorio.tomasPendientesDe(fecha)
             .map { it.id to LocalDateTime.of(it.fecha, it.horaProgramada) }
             .filter { it.second.isAfter(ahora) }
     }

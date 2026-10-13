@@ -106,6 +106,16 @@ interface TomaDao {
     suspend fun obtenerPorHorarioYFecha(horarioId: Long, fecha: LocalDate): TomaEntity?
 
     /**
+     * Tomas de un día que siguen pendientes.
+     *
+     * Es la entrada de la que parte el planificador de avisos: hay que
+     * recorrer todas, no solo las creadas en esta pasada, o un medicamento
+     * añadido ayer se quedaría hoy sin alarma.
+     */
+    @Query("SELECT * FROM tomas WHERE fecha = :fecha AND estado = 'PENDIENTE'")
+    suspend fun pendientesDe(fecha: LocalDate): List<TomaEntity>
+
+    /**
      * Inserta ignorando duplicados. Al abrir la app se llama por cada horario
      * del día y no debe fallar porque la toma ya exista.
      */

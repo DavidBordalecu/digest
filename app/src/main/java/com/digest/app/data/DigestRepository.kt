@@ -1,5 +1,6 @@
 package com.digest.app.data
 
+import com.digest.app.data.local.CirugiaDao
 import com.digest.app.data.local.ComidaDao
 import com.digest.app.data.local.DeposicionDao
 import com.digest.app.data.local.DiarioDao
@@ -12,6 +13,7 @@ import com.digest.app.data.local.PerfilDao
 import com.digest.app.data.local.PesajeDao
 import com.digest.app.data.local.SintomaDao
 import com.digest.app.data.local.TomaDao
+import com.digest.app.data.local.entity.CirugiaEntity
 import com.digest.app.data.local.entity.ComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
@@ -40,6 +42,7 @@ import java.time.LocalTime
  */
 class DigestRepository(
     private val perfilDao: PerfilDao,
+    private val cirugiaDao: CirugiaDao,
     private val medicamentoDao: MedicamentoDao,
     private val horarioDao: HorarioDao,
     private val tomaDao: TomaDao,
@@ -63,6 +66,10 @@ class DigestRepository(
 
     suspend fun perfilConfigurado(): Boolean = perfilDao.existe()
 
+    fun observarCirugias(): Flow<List<CirugiaEntity>> = cirugiaDao.observarTodas()
+
+    suspend fun guardarCirugia(cirugia: CirugiaEntity): Long = cirugiaDao.insertar(cirugia)
+
     // --- Medicación ---
 
     fun observarMedicamentos(): Flow<List<MedicamentoEntity>> = medicamentoDao.observarActivos()
@@ -73,8 +80,22 @@ class DigestRepository(
     fun observarHorarios(medicamentoId: Long): Flow<List<HorarioEntity>> =
         horarioDao.observarDeMedicamento(medicamentoId)
 
+    fun observarTodosLosHorarios(): Flow<List<HorarioEntity>> = horarioDao.observarTodos()
+
     suspend fun guardarMedicamento(medicamento: MedicamentoEntity): Long =
-        medicamentoDao.insertar(medicamento)
+        medicamentoDao.insertar(conNombreNormalizado(medicamento))
+
+    /**
+     * Recalcula la copia normalizada del nombre antes de guardar.
+     *
+     * Kotlin no vuelve a evaluar los valores por defecto del constructor al
+     * usar `copy()`: si el paciente corrige el nombre del fármaco se
+     * quedaría la copia antigua y la búsqueda dejaría de encontrarlo.
+     * Centralizarlo aquí evita que cada pantalla tenga que acordarse.
+     */
+    private fun conNombreNormalizado(medicamento: MedicamentoEntity) = medicamento.copy(
+        nombreNormalizado = MedicamentoEntity.normalizar(medicamento.nombre),
+    )
 
     suspend fun obtenerMedicamento(id: Long): MedicamentoEntity? =
         medicamentoDao.obtener(id)
@@ -83,7 +104,7 @@ class DigestRepository(
     suspend fun nombreMedicamento(id: Long?): String? = id?.let { obtenerMedicamento(it)?.nombre }
 
     suspend fun actualizarMedicamento(medicamento: MedicamentoEntity) =
-        medicamentoDao.actualizar(medicamento)
+        medicamentoDao.actualizar(conNombreNormalizado(medicamento))
 
     suspend fun desactivarMedicamento(id: Long) = medicamentoDao.desactivar(id)
 
@@ -142,6 +163,10 @@ class DigestRepository(
     }
 
     suspend fun obtenerToma(tomaId: Long): TomaEntity? = tomaDao.obtener(tomaId)
+
+    /** Tomas de [fecha] que siguen sin tomar: la lista que hay que avisar. */
+    suspend fun tomasPendientesDe(fecha: LocalDate = LocalDate.now()): List<TomaEntity> =
+        tomaDao.pendientesDe(fecha)
 
     suspend fun adherencia(desde: LocalDate, hasta: LocalDate) = tomaDao.adherencia(desde, hasta)
 

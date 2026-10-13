@@ -55,8 +55,10 @@ class ReceptorAvisoToma : BroadcastReceiver() {
                     ),
                     cuerpo = context.getString(
                         com.digest.app.R.string.aviso_cuerpo,
-                        toma.horaProgramada.toString(),
-                        dosis ?: "",
+                        toma.horaProgramada.toString().take(5),
+                        // La dosis entra como sufijo ya separado: si no la
+                        // hay, no debe quedar un punto suelto al final.
+                        dosis?.let { " · $it" }.orEmpty(),
                     ),
                     retrasada = retrasado,
                 )
