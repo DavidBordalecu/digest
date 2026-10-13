@@ -244,18 +244,38 @@ object AlertasClinicas {
         )
     }
 
+    /**
+ * Varios síntomas a la vez.
+ *
+ * No basta con contar: quien tiene Crohn arrastra uno o dos síntomas
+ * basales todo el año, y avisarle cada día sería ruido que acabaría
+ * ignorándose. Se exige que además alguno tenga intensidad moderada, o que
+ * sean muchos. Y si el paciente dice que se encuentra mal, baja el listón:
+ * a quien se siente bien con tres síntomas leves no hay que asustarle.
+ */
     private fun sintomaNuevoProlongado(c: ContextoClinico): SenalClinica? {
-        // Sensación general mala con varios síntomas a la vez: suele
-        // acompañar a un brote que no se está tratando.
         val cuantos = c.sintomasHoy.size
-        val mal = c.sensacion == SensacionGeneral.MAL || c.sensacion == SensacionGeneral.MUY_MAL
-        if (cuantos < 3 || !mal) return null
+        if (cuantos < 3) return null
+
+        val algunoIntenso = c.sintomasHoy.values.any { it >= GRAVEDAD_MODERADA }
+        val muchos = cuantos >= 5
+        val seSienteMal = c.sensacion == SensacionGeneral.MAL ||
+            c.sensacion == SensacionGeneral.MUY_MAL
+
+        if (!muchos && !algunoIntenso && !seSienteMal) return null
+
+        val porque = when {
+            muchos -> "$cuantos síntomas activos"
+            algunoIntenso -> "$cuantos síntomas, alguno con intensidad alta"
+            else -> "$cuantos síntomas y sensación general mala"
+        }
 
         return SenalClinica(
             titulo = "Varios síntomas a la vez",
-            explicacion = "Tienes $cuantos síntomas activos y te sientes mal en general. " +
-                "Esa combinación suele indicar que la enfermedad no está bien controlada.",
-            porque = "$cuantos síntomas activos con sensación general mala",
+            explicacion = "Tienes $cuantos síntomas activos hoy. Esa combinación suele " +
+                "indicar que la enfermedad no está bien controlada, y conviene que lo revise " +
+                "tu médico.",
+            porque = porque,
             nivel = NivelUrgencia.PRONTO,
         )
     }

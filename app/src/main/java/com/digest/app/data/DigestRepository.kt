@@ -26,6 +26,12 @@ import com.digest.app.data.local.entity.PerfilEntity
 import com.digest.app.data.local.entity.PesajeEntity
 import com.digest.app.data.local.entity.SintomaEntity
 import com.digest.app.data.local.entity.TomaEntity
+import com.digest.app.domain.AlertasClinicas
+import com.digest.app.domain.ContextoClinico
+import com.digest.app.domain.DeposicionDia
+import com.digest.app.domain.InformePeriodo
+import com.digest.app.domain.SintomaDia
+import com.digest.app.domain.nombreLegible
 import com.digest.app.model.EstadoToma
 import com.digest.app.model.TipoSintoma
 import kotlinx.coroutines.flow.Flow
@@ -343,5 +349,82 @@ class DigestRepository(
     suspend fun guardarIntervaloConsulta(meses: Int) {
         val perfil = obtenerPerfil() ?: return
         guardarPerfil(perfil.copy(intervaloConsultaMeses = meses.coerceIn(1, 36)))
+    }
+
+    // --- Informe para el médico ---
+
+    /**
+     * Reúne los datos de un periodo en la forma que necesita el informe.
+     *
+     * Va al final del repositorio a propósito: es una lectura transversal a
+     * casi todas las tablas, no un dato más del dominio.
+     */
+    suspend fun prepararInforme(desde: LocalDate, hasta: LocalDate): InformePeriodo {
+        val perfil = obtenerPerfil()
+        val deposiciones = deposicionDao.entre(desde, hasta)
+
+        // Los síntomas se agrupan por día recorriendo cada tipo: así no
+        // hace falta una consulta por fecha, que serían una por día del
+        // periodo.
+        val sintomasPorDia = mutableMapOf<LocalDate, MutableList<SintomaDia>>()
+        for (tipo in TipoSintoma.entries) {
+            for (fecha in fechasDeSintoma(tipo, hasta)) {
+                if (fecha < desde) continue
+                val gravedad = sintomaDao.obtener(fecha, tipo)?.gravedad ?: continue
+                sintomasPorDia.getOrPut(fecha) { mutableListOf() }
+                    .add(SintomaDia(tipo.nombreLegible, gravedad))
+            }
+        }
+
+        return InformePeriodo(
+            desde = desde,
+            hasta = hasta,
+            perfil = perfil,
+            tomas = tomaDao.observarRangoSincrono(desde, hasta),
+            deposiciones = deposiciones,
+            sintomas = sintomasPorDia,
+            comidas = comidaDao.entre(desde, hasta).groupBy { it.fecha },
+            diario = diarioDao.entre(desde, hasta).associateBy { it.fecha },
+            pesajes = pesajeDao.entre(desde, hasta),
+            senales = construirContextoClinico(perfil, deposiciones, hasta)
+                ?.let { AlertasClinicas.evaluar(it) }
+                .orEmpty(),
+        )
+    }
+
+    /**
+     * Monta el contexto que consumen las señales de alarma.
+     *
+     * Vive aquí para que la pantalla de hoy y el informe partan de la
+     * misma construcción: si se duplicara, el médico recibiría unos datos y
+     * el paciente vería otros.
+     */
+    suspend fun construirContextoClinico(
+        perfil: PerfilEntity?,
+        deposiciones: List<DeposicionEntity>?,
+        hoy: LocalDate,
+    ): ContextoClinico? {
+        val p = perfil ?: return null
+        val sintomasHoy = sintomaDao.de(hoy)
+        val deposicionesHoy = deposiciones?.filter { it.fecha == hoy }
+            ?: deposicionDao.delDia(hoy)
+
+        return ContextoClinico(
+            condicion = p.condicion,
+            diasDesdeUltimaConsulta = p.ultimaConsulta?.let {
+                java.time.temporal.ChronoUnit.DAYS.between(it, hoy).toInt()
+            },
+            intervaloConsultaMeses = p.intervaloConsultaMeses,
+            sintomasHoy = sintomasHoy.associate { it.tipo to it.gravedad },
+            diasConSintoma = rachasDeSintomas(sintomasHoy.map { it.tipo }.toSet(), hoy),
+            deposicionesHoy = deposicionesHoy.map { DeposicionDia(it.bristol, it.sangre) },
+            deposicionesUltimosSieteDias = deposicionDao.contarRango(hoy.minusDays(6), hoy),
+            perdidaPesoPorcentaje = perdidaDePesoPorcentaje(),
+            sensacion = diarioDao.obtener(hoy)?.sensacion,
+            manifestacionPerianalReciente = perianalDao.contarRango(
+                hoy.minusDays(10),
+                hoy,
+            ) > 0,
+        )
     }
 }

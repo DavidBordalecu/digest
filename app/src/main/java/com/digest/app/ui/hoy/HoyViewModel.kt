@@ -26,7 +26,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -77,6 +79,21 @@ data class EstadoHoy(
         }
 }
 
+/**
+ * Confirmación de un registro, para mostrarla justo después de marcar.
+ *
+ * Es un tipo y no un texto para que la traducción se quede en la capa de
+ * interfaz: la lógica no debe decidir cómo se escribe una frase en español.
+ */
+sealed interface ResultadoRegistro {
+    /** Se guardó y no hay ninguna señal activa. */
+    data object SinSenales : ResultadoRegistro
+
+    /** Se guardó y hay al menos una señal, con su título. */
+    data class ConSenales(val titulo: String, val total: Int, val urgentes: Int) :
+        ResultadoRegistro
+}
+
 /** Datos reactivos del día, antes de mezclarlos con las señales. */
 private data class DatosDelDia(
     val perfil: PerfilEntity?,
@@ -122,6 +139,17 @@ class HoyViewModel(
     /** Las señales se recalculan aparte porque exigen consultar el histórico. */
     private val senales = MutableStateFlow<List<SenalClinica>>(emptyList())
 
+    /**
+     * Confirmación del último registro.
+     *
+     * Existe porque marcar un síntoma sin que pase nada visible es
+     * desconcertante: el paciente no sabe si se ha guardado, y acaba
+     * marcándolo otra vez por si acaso. Con esto sabe al instante si ha
+     * quedado registrado y si haSaltado algún aviso.
+     */
+    private val _resultado = MutableSharedFlow<ResultadoRegistro>(extraBufferCapacity = 1)
+    val resultado: SharedFlow<ResultadoRegistro> = _resultado.asSharedFlow()
+
     val estado: StateFlow<EstadoHoy> = combine(datos, senales) { base, avisos ->
         EstadoHoy(
             perfil = base.perfil,
@@ -160,10 +188,31 @@ class HoyViewModel(
      * un cambio a media mañana tiene que reflejarse sin reiniciar la app.
      */
     fun recalcularSenales() {
-        viewModelScope.launch {
-            senales.value = construirContexto()?.let { AlertasClinicas.evaluar(it) }
-                ?: emptyList()
-        }
+        viewModelScope.launch { recalcularYNotificar() }
+    }
+
+    /**
+     * Recalcula las señales y avisa de qué ha quedado.
+     *
+     * Sin este aviso, marcar un síntoma no produce ninguna señal visible y
+     * el paciente no sabe si se ha guardado. Devuelve las señales para que
+     * quien la llama pueda informar sin esperar al siguiente redibujado.
+     */
+    private suspend fun recalcularYNotificar() {
+        val evaluadas = construirContexto()?.let { AlertasClinicas.evaluar(it) }.orEmpty()
+        senales.value = evaluadas
+
+        _resultado.tryEmit(
+            if (evaluadas.isEmpty()) {
+                ResultadoRegistro.SinSenales
+            } else {
+                ResultadoRegistro.ConSenales(
+                    titulo = evaluadas.first().titulo,
+                    total = evaluadas.size,
+                    urgentes = evaluadas.count { it.nivel == NivelUrgencia.URGENTE },
+                )
+            },
+        )
     }
 
     /**
@@ -248,7 +297,7 @@ class HoyViewModel(
             } else {
                 repositorio.marcarSintoma(fecha, tipo, actual + 1)
             }
-            recalcularSenales()
+            recalcularYNotificar()
         }
     }
 

@@ -290,4 +290,25 @@
     <string name="perfil_intervalo_consulta">Cada cuántos meses te revisas</string>
     <string name="perfil_guardar_intervalo">Guardar intervalo</string>
     <string name="perfil_consulta_nunca">Todavía no has registrado ninguna consulta</string>
+
+    <!-- Informe para el médico -->
+    <string name="informe_titulo">Informe para tu médico</string>
+    <string name="informe_explicacion">Genera un resumen del periodo para llevarlo a la consulta. No sale de tu móvil: tú decides a quién se lo mandas.</string>
+    <string name="informe_texto">Texto</string>
+    <string name="informe_csv">CSV</string>
+    <string name="informe_generando">Generando informe…</string>
+    <string name="periodo_semana">7 días</string>
+    <string name="periodo_quincena">15 días</string>
+    <string name="periodo_mes">30 días</string>
+
+    <!-- Resumen del diario -->
+    <string name="diario_resumen_hoy">Resumen de hoy</string>
+    <string name="diario_sin_sintomas">Hoy no has marcado ningún síntoma.</string>
+    <string name="diario_sintomas_marcados">Síntomas de hoy: %1$d</string>
+    <string name="diario_pulsa_ajustar">Pulsa para cambiar la intensidad</string>
+
+    <!-- Confirmación de un registro -->
+    <string name="registro_sin_senales">Guardado. Ningún aviso de consulta por ahora.</string>
+    <string name="registro_senales">Guardado. %1$d aviso(s): %2$s</string>
+    <string name="registro_urgente">Guardado. AVISO URGENTE: %1$s</string>
 </resources>

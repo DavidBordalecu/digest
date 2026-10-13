@@ -22,6 +22,9 @@ interface ComidaDao {
     @Query("SELECT * FROM comidas WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC, hora")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<ComidaEntity>>
 
+    @Query("SELECT * FROM comidas WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
+    suspend fun entre(desde: LocalDate, hasta: LocalDate): List<ComidaEntity>
+
     @Insert
     suspend fun insertar(comida: ComidaEntity): Long
 
@@ -43,6 +46,9 @@ interface DeposicionDao {
 
     @Query("SELECT * FROM deposiciones WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<DeposicionEntity>>
+
+    @Query("SELECT * FROM deposiciones WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
+    suspend fun entre(desde: LocalDate, hasta: LocalDate): List<DeposicionEntity>
 
     @Query("SELECT COUNT(*) FROM deposiciones WHERE fecha = :fecha")
     fun contarDelDia(fecha: LocalDate): Flow<Int>

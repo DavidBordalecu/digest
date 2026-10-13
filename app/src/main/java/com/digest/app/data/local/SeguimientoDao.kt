@@ -25,6 +25,9 @@ interface DiarioDao {
     @Query("SELECT * FROM diario WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<DiarioEntity>>
 
+    @Query("SELECT * FROM diario WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha")
+    suspend fun entre(desde: LocalDate, hasta: LocalDate): List<DiarioEntity>
+
     /** El diario es una fila por fecha: al guardar, se replaces. */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardar(diario: DiarioEntity)

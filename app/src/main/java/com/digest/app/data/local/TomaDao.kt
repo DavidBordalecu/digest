@@ -99,6 +99,38 @@ interface TomaDao {
     )
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<TomaConDetalle>>
 
+    /**
+     * Igual que [observarRango] pero de una sola vez: la necesita el
+     * informe, que construye todo el periodo antes de escribirlo.
+     */
+    @Transaction
+    @Query(
+        """
+        SELECT
+            t.id            AS id,
+            t.fecha         AS fecha,
+            t.horaProgramada AS horaProgramada,
+            t.estado        AS estado,
+            t.horaReal      AS horaReal,
+            t.notas         AS notas,
+            h.id            AS horarioId,
+            h.nota          AS notaHorario,
+            m.id            AS medicamentoId,
+            m.nombre        AS medicamentoNombre,
+            m.dosis         AS dosis,
+            m.presentacion  AS presentacion,
+            m.via           AS via,
+            m.instrucciones AS instrucciones,
+            m.color         AS color
+        FROM tomas t
+        JOIN horarios h    ON h.id = t.horarioId
+        JOIN medicamentos m ON m.id = h.medicamentoId
+        WHERE t.fecha BETWEEN :desde AND :hasta
+        ORDER BY t.fecha, t.horaProgramada
+        """,
+    )
+    suspend fun observarRangoSincrono(desde: LocalDate, hasta: LocalDate): List<TomaConDetalle>
+
     @Query("SELECT * FROM tomas WHERE id = :id")
     suspend fun obtener(id: Long): TomaEntity?
 
