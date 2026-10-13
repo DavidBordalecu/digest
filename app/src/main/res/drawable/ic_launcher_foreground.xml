@@ -1,30 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Marca de Digest: el marco del colon dibujado con un trazo continuo.
+
+  El diseño maestro está en 512x512 (logo/logo.svg); aquí se reduce y se
+  centra dentro de la zona segura del icono adaptativo, que es el círculo
+  central de 66x66 sobre un lienzo de 108x108. Todo lo que se salga de esa
+  zona lo recortaría el lanzador en según qué formas.
+
+  El trazo va escalado por un <group>, no dibujado ya reducido: así el
+  grosor de línea se mantiene proporcional al dibujo maestro.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
-                android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+
+    <group
+        android:scaleX="0.28"
+        android:scaleY="0.28"
+        android:translateX="-19.4"
+        android:translateY="-19.5">
+
+        <path
+            android:pathData="M176,356
+                             C160,316 154,246 156,192
+                             C157,166 180,152 206,152
+                             L318,152
+                             C344,152 367,166 368,192
+                             C370,250 366,298 362,328
+                             C356,366 318,380 290,358
+                             C268,340 272,310 296,302"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="44"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
 </vector>
