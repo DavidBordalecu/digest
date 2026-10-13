@@ -17,6 +17,9 @@ import java.time.LocalDate
 interface DiarioDao {
 
     @Query("SELECT * FROM diario WHERE fecha = :fecha")
+    suspend fun obtener(fecha: LocalDate): DiarioEntity?
+
+    @Query("SELECT * FROM diario WHERE fecha = :fecha")
     fun observar(fecha: LocalDate): Flow<DiarioEntity?>
 
     @Query("SELECT * FROM diario WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC")

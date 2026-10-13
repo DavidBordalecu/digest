@@ -167,4 +167,15 @@
     <string name="brote_moderado">Brote moderado</string>
     <string name="brote_severo">Brote severo</string>
     <string name="brote_no_aplica">No me aplica</string>
+
+    <!-- Notificaciones -->
+    <string name="canal_pendiente">Recordatorios de medicación</string>
+    <string name="canal_pendiente_desc">Aviso a la hora de cada toma programada.</string>
+    <string name="canal_urgente">Tomas pendientes</string>
+    <string name="canal_urgente_desc">Aviso de una toma que se ha pasado de hora.</string>
+    <string name="aviso_titulo">Toma de %1$s</string>
+    <string name="aviso_cuerpo">Te toca tomarlo (%1$s)%2$s</string>
+    <string name="medicamento_sin_nombre">medicamento</string>
+    <string name="accion_tomar">Tomada</string>
+    <string name="accion_omitir">Omitir</string>
 </resources>

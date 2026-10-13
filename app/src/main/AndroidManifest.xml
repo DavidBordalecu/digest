@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Avisos de toma. Android 13+ exige permiso explícito del usuario. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+      Alarmas exactas: sin ellas el aviso puede retrasarse y, en un paciente
+      con tratamiento estricto, llegar demasiado tarde. Si el usuario no
+      concede el permiso, la app degrada a alarmas inexactas.
+    -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- Android 13+ avisa de los reinicios para poder reprogramar avisos. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
+        android:name=".DigestApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -9,14 +23,37 @@
         android:supportsRtl="true"
         android:windowSoftInputMode="adjustResize"
         android:theme="@style/Theme.Digest">
+
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Publica el aviso cuando salta la alarma de una toma. -->
+        <receiver
+            android:name=".notificaciones.ReceptorAvisoToma"
+            android:exported="false" />
+
+        <!-- Acciones "Tomada" / "Omitir" sobre la notificación. -->
+        <receiver
+            android:name=".notificaciones.ReceptorAccionToma"
+            android:exported="false" />
+
+        <!-- Reprograma los avisos tras reiniciar o actualizar la app. -->
+        <receiver
+            android:name=".notificaciones.ReceptorReinicio"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

@@ -83,6 +83,16 @@ interface HorarioDao {
     )
     fun observarDeHoy(bitDia: Int): Flow<List<HorarioEntity>>
 
+    /** Horarios que tocan hoy, para materializar las tomas al abrir la app. */
+    @Query(
+        """
+        SELECT * FROM horarios
+        WHERE diasSemana = 0 OR (diasSemana & :bitDia) != 0
+        ORDER BY hora
+        """,
+    )
+    suspend fun deHoy(bitDia: Int): List<HorarioEntity>
+
     @Query("SELECT * FROM horarios WHERE id = :id")
     suspend fun obtener(id: Long): HorarioEntity?
 
