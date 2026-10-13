@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -30,6 +31,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.digest.app.R
 import com.digest.app.model.TipoCirugia
 import com.digest.app.ui.componentes.CabeceraPantalla
+import com.digest.app.ui.directorio.PantallaDirectorio
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 /**
  * Ficha del paciente.
@@ -49,6 +53,10 @@ fun PantallaPerfil(modifier: Modifier = Modifier) {
     var altura by remember(estado.perfil) {
         mutableStateOf(estado.perfil?.alturaCm?.toString().orEmpty())
     }
+    var intervalo by remember(estado.perfil) {
+        mutableStateOf((estado.perfil?.intervaloConsultaMeses ?: 6).toString())
+    }
+    var directorioAbierto by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -134,6 +142,71 @@ fun PantallaPerfil(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text(stringResource(R.string.perfil_guardar)) }
             }
+        }
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(
+                Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.perfil_ultima_consulta),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                val perfilActual = estado.perfil
+                val ultimaConsulta = perfilActual?.ultimaConsulta
+                if (ultimaConsulta == null) {
+                    Text(
+                        text = stringResource(R.string.perfil_consulta_nunca),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    val dias = ChronoUnit.DAYS.between(ultimaConsulta, LocalDate.now())
+                    Text(
+                        text = stringResource(R.string.senales_ultima_consulta, dias),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = ultimaConsulta.toString(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                FilledTonalButton(
+                    onClick = viewModel::registrarConsultaHoy,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.perfil_registrar_consulta)) }
+
+                OutlinedTextField(
+                    value = intervalo,
+                    onValueChange = { intervalo = it.filter { c -> c.isDigit() }.take(2) },
+                    label = { Text(stringResource(R.string.perfil_intervalo_consulta)) },
+                    suffix = { Text("meses") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
+                OutlinedButton(
+                    onClick = { intervalo.toIntOrNull()?.let(viewModel::guardarIntervalo) },
+                    enabled = intervalo.toIntOrNull() in 1..36,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.perfil_guardar_intervalo)) }
+
+                OutlinedButton(
+                    onClick = { directorioAbierto = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.directorio_titulo)) }
+            }
+        }
+
+        if (directorioAbierto) {
+            PantallaDirectorio(
+                condicion = estado.perfil?.condicion,
+                alCerrar = { directorioAbierto = false },
+            )
         }
 
         Card(Modifier.fillMaxWidth()) {

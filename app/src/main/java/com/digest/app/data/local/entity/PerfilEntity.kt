@@ -26,6 +26,18 @@ data class PerfilEntity(
 
     val fechaDiagnostico: LocalDate? = null,
 
+    /**
+     * Última consulta registrada por el paciente.
+     *
+     * No la guarda el médico: la apunta el usuario al salir de la cita. Es
+     * lo que permite sugerir una revisión cuando toca, sin que nadie tenga
+     * que acordarse de la fecha.
+     */
+    val ultimaConsulta: LocalDate? = null,
+
+    /** Cada cuántos meses suele revisarse. Alimenta el aviso de revisión. */
+    val intervaloConsultaMeses: Int = 6,
+
     // --- Peso y altura ---
     val pesoKg: Double?,
     val alturaCm: Double?,

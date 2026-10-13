@@ -258,4 +258,90 @@ class DigestRepository(
 
     suspend fun guardarPerianal(manifestacion: ManifestacionPerianalEntity): Long =
         perianalDao.insertar(manifestacion)
+
+    // --- Contexto clínico para las señales de alarma ---
+    //
+    // Estas consultas no salen de la interfaz: son las que alimentan
+    // AlertasClinicas. Se mantienen aquí para que el evaluador no tenga que
+    // saber nada de Room.
+
+    suspend fun deposicionesDe(fecha: LocalDate): List<DeposicionEntity> =
+        deposicionDao.delDia(fecha)
+
+    suspend fun deposicionesEntre(desde: LocalDate, hasta: LocalDate): Int =
+        deposicionDao.contarRango(desde, hasta)
+
+    /** Síntomas de un día, leídos frescos (no desde el flujo reactivo). */
+    suspend fun sintomasDe(fecha: LocalDate): List<SintomaEntity> =
+        sintomaDao.de(fecha)
+
+    suspend fun diarioDe(fecha: LocalDate): DiarioEntity? = diarioDao.obtener(fecha)
+
+    suspend fun manifestacionesPerianalesEntre(desde: LocalDate, hasta: LocalDate): Int =
+        perianalDao.contarRango(desde, hasta)
+
+    suspend fun fechasDeSintoma(tipo: TipoSintoma, hasta: LocalDate): List<LocalDate> =
+        sintomaDao.fechasDeSintoma(tipo, hasta)
+
+    /**
+     * Días consecutivos que lleva presente cada síntoma hasta [hoy].
+     *
+     * Solo cuenta hacia atrás desde hoy: un síntoma que dejó de marcarse ayer
+     * tiene racha cero, que es lo que espera el paciente al dejar de marcar
+     * que se le ha pasado.
+     */
+    suspend fun rachasDeSintomas(
+        tipos: Set<TipoSintoma>,
+        hoy: LocalDate,
+    ): Map<TipoSintoma, Int> {
+        val resultado = mutableMapOf<TipoSintoma, Int>()
+        for (tipo in tipos) {
+            val fechas = fechasDeSintoma(tipo, hoy)
+            if (fechas.isEmpty() || fechas.first() != hoy) continue
+
+            var racha = 0
+            var esperada = hoy
+            for (fecha in fechas) {
+                if (fecha != esperada) break
+                racha++
+                esperada = esperada.minusDays(1)
+            }
+            if (racha > 0) resultado[tipo] = racha
+        }
+        return resultado
+    }
+
+    /**
+     * Pérdida de peso acumulada en los últimos [meses] meses, en porcentaje.
+     *
+     * Compara el peso medio reciente con el de hace `meses`. Se usan medias
+     * y no valores sueltos porque el peso fluctúa a diario por la retención
+     * de líquidos: comparar un único peso produce falsos positivos.
+     */
+    suspend fun perdidaDePesoPorcentaje(meses: Long = 3): Float? {
+        val hoy = LocalDate.now()
+        val desde = hoy.minusMonths(meses)
+        val antiguos = pesajeDao.entre(desde, hoy.minusMonths(1))
+        val recientes = pesajeDao.entre(hoy.minusMonths(1), hoy)
+
+        if (antiguos.isEmpty() || recientes.isEmpty()) return null
+
+        val antes = antiguos.map { it.pesoKg }.average()
+        val ahora = recientes.map { it.pesoKg }.average()
+        if (antes <= 0) return null
+
+        val perdida = ((antes - ahora) / antes * 100).toFloat()
+        // Solo interesan las caídas: ganar peso no es una señal de alarma.
+        return if (perdida > 0f) perdida else null
+    }
+
+    suspend fun guardarConsulta(fecha: LocalDate) {
+        val perfil = obtenerPerfil() ?: return
+        guardarPerfil(perfil.copy(ultimaConsulta = fecha, actualizadoEn = System.currentTimeMillis()))
+    }
+
+    suspend fun guardarIntervaloConsulta(meses: Int) {
+        val perfil = obtenerPerfil() ?: return
+        guardarPerfil(perfil.copy(intervaloConsultaMeses = meses.coerceIn(1, 36)))
+    }
 }

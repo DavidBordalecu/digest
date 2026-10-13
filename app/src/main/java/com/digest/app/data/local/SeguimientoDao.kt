@@ -56,6 +56,10 @@ interface PesajeDao {
     @Query("SELECT * FROM pesajes WHERE fecha = :fecha LIMIT 1")
     suspend fun obtenerPorFecha(fecha: LocalDate): PesajeEntity?
 
+    /** Pesajes de un rango, para comparar periodos y calcular la pérdida. */
+    @Query("SELECT * FROM pesajes WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha")
+    suspend fun entre(desde: LocalDate, hasta: LocalDate): List<PesajeEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardar(pesaje: PesajeEntity): Long
 
@@ -99,6 +103,10 @@ interface ManifestacionPerianalDao {
 
     @Query("SELECT * FROM manifestaciones_perianales WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<ManifestacionPerianalEntity>>
+
+    /** ¿Ha habido alguna manifestación perianal en el periodo? */
+    @Query("SELECT COUNT(*) FROM manifestaciones_perianales WHERE fecha BETWEEN :desde AND :hasta")
+    suspend fun contarRango(desde: LocalDate, hasta: LocalDate): Int
 
     @Query("SELECT COUNT(*) FROM manifestaciones_perianales WHERE tipo = :tipo")
     suspend fun contarDeTipo(tipo: TipoSintoma): Int

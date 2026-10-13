@@ -21,7 +21,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -40,6 +42,8 @@ import com.digest.app.theme.TomaHecha
 import com.digest.app.theme.TomaOmitida
 import com.digest.app.theme.TomaPendiente
 import com.digest.app.ui.componentes.AvisoPermisos
+import com.digest.app.ui.componentes.TarjetaSenales
+import com.digest.app.ui.directorio.PantallaDirectorio
 import com.digest.app.ui.componentes.CabeceraPantalla
 import com.digest.app.ui.componentes.ChipSintoma
 import com.digest.app.ui.componentes.Vacio
@@ -56,11 +60,15 @@ import com.digest.app.ui.componentes.Vacio
 fun PantallaHoy(modifier: Modifier = Modifier) {
     val viewModel: HoyViewModel = viewModel(factory = HoyViewModel.fabrica)
     val estado by viewModel.estado.collectAsStateWithLifecycle()
+    var directorioAbierto by remember { mutableStateOf(false) }
 
-    // Al entrar en la pestaña se comprueban las tomas del día: así un
-    // fármaco añadido hace un momento aparece con su aviso sin tener que
-    // reiniciar la app.
-    LaunchedEffect(Unit) { viewModel.prepararHoy() }
+    // Al entrar en la pestaña se comprueban las tomas del día y se reevalúan
+    // las señales: así un síntoma añadido hace un momento aparece con su
+    // aviso sin tener que reiniciar la app.
+    LaunchedEffect(Unit) {
+        viewModel.prepararHoy()
+        viewModel.recalcularSenales()
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -68,6 +76,16 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { CabeceraPantalla(estado.perfil) }
+
+        // Las señales van justo bajo la cabecera: si hay algo que consultar,
+        // es lo primero que se ve y lo primero que hay que atender.
+        item {
+            TarjetaSenales(
+                senales = estado.senales,
+                diasDesdeUltimaConsulta = estado.diasDesdeUltimaConsulta,
+                alVerDirectorio = { directorioAbierto = true },
+            )
+        }
 
         item { AvisoPermisos() }
 
@@ -157,9 +175,23 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
                 marcados = estado.sintomasMarcados,
                 alAlternar = viewModel::alternarSintoma,
             )
+            Text(
+                text = stringResource(R.string.hoy_gravedad_ayuda),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
         }
 
         item { Spacer(Modifier.padding(8.dp)) }
+    }
+
+    // El directorio se abre a pantalla completa sobre la pantalla de hoy.
+    if (directorioAbierto) {
+        PantallaDirectorio(
+            condicion = estado.perfil?.condicion,
+            alCerrar = { directorioAbierto = false },
+        )
     }
 }
 

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.TypeConverters
 import com.digest.app.data.local.entity.CirugiaEntity
 import com.digest.app.data.local.entity.ComidaEntity
@@ -42,7 +44,7 @@ import com.digest.app.data.local.entity.TomaEntity
         NutricionEnteralEntity::class,
         ManifestacionPerianalEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -78,6 +80,25 @@ abstract class DigestDatabase : RoomDatabase() {
                 // WAL permite leer mientras se escribe: el registro de una toma
                 // desde el aviso no se solapa con la lectura de la pantalla de hoy.
                 .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)
+                .addMigrations(MIGRACION_1_2)
                 .build()
+
+        /**
+         * Paso 1 → 2: fecha de la última consulta e intervalo de revisión.
+         *
+         * `ultimaConsulta` se deja a null a propósito: el paciente aún no ha
+         * dicho cuándo fue, y poner una fecha inventada haría que la app
+         * avisara de una revisión que no toca.
+         */
+        val MIGRACION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE perfil ADD COLUMN ultimaConsulta INTEGER DEFAULT NULL",
+                )
+                db.execSQL(
+                    "ALTER TABLE perfil ADD COLUMN intervaloConsultaMeses INTEGER NOT NULL DEFAULT 6",
+                )
+            }
+        }
     }
 }

@@ -221,6 +221,7 @@
     <string name="hoy_comidas">Comidas de hoy</string>
     <string name="hoy_sin_comidas">Todavía no has registrado ninguna comida</string>
     <string name="hoy_sintomas">¿Cómo estás hoy?</string>
+    <string name="hoy_gravedad_ayuda">Pulsa un síntoma para marcarlo y vuelve a pulsar para aumentar la intensidad. En el máximo, el siguiente toque lo quita.</string>
 
     <!-- Medicamentos -->
     <string name="medicamentos_vacio">No hay medicación registrada</string>
@@ -262,4 +263,31 @@
     <string name="editor_todos_los_dias">Por defecto, todos los días</string>
     <string name="editor_guardar">Guardar</string>
     <string name="editor_cancelar">Cancelar</string>
+
+    <!-- Señales de alarma -->
+    <string name="senales_urgente">Consulta hoy</string>
+    <string name="senales_pronto">Conviene pedir cita</string>
+    <string name="senales_descargo">Digest no diagnostica. Estas señales señalan situaciones que no deberían esperar: ante una urgencia, acude a un servicio médico.</string>
+    <string name="senales_ver_directorio">Ver profesionales</string>
+    <string name="senales_ultima_consulta">Última consulta: hace %1$d días</string>
+
+    <!-- Directorio de profesionales -->
+    <string name="directorio_titulo">Profesionales</string>
+    <string name="directorio_aviso_ficticio">Directorio de ejemplo. Los nombres, teléfonos y centros no son reales: sirven para probar la app mientras se reúnen los datos reales.</string>
+    <string name="directorio_buscar">Buscar por nombre, centro o ciudad</string>
+    <string name="directorio_todos">Todos</string>
+    <string name="directorio_gastro">Gastroenterología</string>
+    <string name="directorio_nutricion">Nutrición</string>
+    <string name="directorio_sin_resultados">No hay profesionales que coincidan.</string>
+    <string name="profesional_especializado">Especializado en enfermedad inflamatoria intestinal</string>
+    <string name="profesional_cita_online">Admite cita online</string>
+    <string name="profesional_llamar">Llamar al %1$s</string>
+    <string name="cerrar">Cerrar</string>
+
+    <!-- Consulta -->
+    <string name="perfil_ultima_consulta">Última consulta</string>
+    <string name="perfil_registrar_consulta">Registrar consulta de hoy</string>
+    <string name="perfil_intervalo_consulta">Cada cuántos meses te revisas</string>
+    <string name="perfil_guardar_intervalo">Guardar intervalo</string>
+    <string name="perfil_consulta_nunca">Todavía no has registrado ninguna consulta</string>
 </resources>

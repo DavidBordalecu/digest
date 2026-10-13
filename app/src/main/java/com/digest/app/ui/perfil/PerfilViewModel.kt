@@ -46,6 +46,19 @@ class PerfilViewModel(private val repositorio: DigestRepository) : ViewModel() {
         }
     }
 
+    /** El paciente anota hoy que ha ido a la consulta. */
+    fun registrarConsultaHoy() {
+        viewModelScope.launch {
+            repositorio.guardarConsulta(java.time.LocalDate.now())
+        }
+    }
+
+    fun guardarIntervalo(meses: Int) {
+        viewModelScope.launch {
+            repositorio.guardarIntervaloConsulta(meses)
+        }
+    }
+
     /**
      * Añade una intervención al historial.
      *

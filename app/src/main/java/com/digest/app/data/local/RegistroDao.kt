@@ -38,11 +38,17 @@ interface DeposicionDao {
     @Query("SELECT * FROM deposiciones WHERE fecha = :fecha ORDER BY hora")
     fun observarDelDia(fecha: LocalDate): Flow<List<DeposicionEntity>>
 
+    @Query("SELECT * FROM deposiciones WHERE fecha = :fecha ORDER BY hora")
+    suspend fun delDia(fecha: LocalDate): List<DeposicionEntity>
+
     @Query("SELECT * FROM deposiciones WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<DeposicionEntity>>
 
     @Query("SELECT COUNT(*) FROM deposiciones WHERE fecha = :fecha")
     fun contarDelDia(fecha: LocalDate): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM deposiciones WHERE fecha BETWEEN :desde AND :hasta")
+    suspend fun contarRango(desde: LocalDate, hasta: LocalDate): Int
 
     /** Media de Bristol por día: la serie que dibuja la curva de tránsito. */
     @Query(
@@ -102,8 +108,20 @@ data class DolorPorDia(val fecha: LocalDate, val media: Double, val maxima: Int)
 @Dao
 interface SintomaDao {
 
+    /**
+     * Fechas en las que se registró un síntoma, de la más reciente a la más
+     * antigua. La racha de días consecutivos se calcula en Kotlin a partir de
+     * esta lista, que es más sencilla de probar que una consulta con
+     * aritmética de fechas en SQL.
+     */
+    @Query("SELECT fecha FROM sintomas WHERE tipo = :tipo AND fecha <= :hoy ORDER BY fecha DESC")
+    suspend fun fechasDeSintoma(tipo: TipoSintoma, hoy: LocalDate): List<LocalDate>
+
     @Query("SELECT * FROM sintomas WHERE fecha = :fecha ORDER BY tipo")
     fun observarDelDia(fecha: LocalDate): Flow<List<SintomaEntity>>
+
+    @Query("SELECT * FROM sintomas WHERE fecha = :fecha ORDER BY tipo")
+    suspend fun de(fecha: LocalDate): List<SintomaEntity>
 
     @Query("SELECT * FROM sintomas WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<SintomaEntity>>
