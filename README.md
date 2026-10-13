@@ -68,12 +68,37 @@ app/src/main/java/com/digest/app/
 ```bash
 source ~/tools/android-env.sh     # JDK 21 + Android SDK
 
-./gradlew assembleDebug           # Compila el APK
+./gradlew assembleDebug           # Compila el APK de depuración
+./gradlew assembleRelease         # Compila el APK firmado (1,7 MB)
 ./gradlew installDebug            # Instala en el dispositivo conectado
 
 ./herramientas/revisar-codigo.sh  # Detecta caracteres o errores de tecleo
 ~/tools/emulador.sh iniciar       # Arranca el emulador
 ```
+
+## Instalar en un móvil sin Play Store
+
+El APK firmado queda en `Digest-v1.0.apk`. Para instalarlo:
+
+1. Pásalo al móvil (cable, tarjeta SD, Drive, correo…)
+2. Ábrelo desde el explorador de archivos
+3. Android pedirá permiso de **"instalar apps de orígenes desconocidos"**
+4. **Play Protect pedirá confirmar** que confías en el archivo: es normal,
+   aparece en cualquier APK que no venga de la tienda. Se marca porque no
+   hay una cuenta de desarrollador detrás.
+
+El APK ya está firmado, así que se puede actualizar sin desinstalar la
+versión anterior.
+
+### Sobre la clave de firma
+
+`digest-firma.jks` es la clave con la que se firma la app. **Si se pierde,
+no se puede publicar ninguna actualización de Digest en Google Play**: la
+tienda rechaza cualquier APK firmado con una clave distinta.
+
+Está fuera de git a propósito. Conviene copiarla a un lugar seguro (nube
+cifrada, por ejemplo) y cambiar la contraseña de `keystore.properties` por
+algo más robusto que la de ejemplo.
 
 ## Estado
 

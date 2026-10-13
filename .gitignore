@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Credenciales de firma: nunca deben subir al repositorio
+keystore.properties
+app/*.jks
+*.jks
+
+# APK compilados: se generan, no se versionan
+*.apk
