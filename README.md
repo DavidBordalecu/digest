@@ -15,6 +15,12 @@ inflamatoria intestinal (colitis ulcerosa, Crohn y colitis indeterminada).
 - **Cuestionario de síntomas** adaptado a la enfermedad del paciente.
 - **Diario diario**: si la medicación mejora, cómo se siente, estado del
   brote e hidratación.
+- **Registro del cuerpo**: deposiciones con la escala de Bristol y la
+  cantidad de sangre, episodios de dolor abdominal con su carácter y su
+  localización, y volumen de nutrición enteral.
+- **Señales de alarma** que avisan de lo que no debería esperar, siempre
+  con el porqué y sin diagnosticar.
+- **Informe exportable** para el médico, en texto y CSV.
 - **Ficha del paciente** con diagnóstico, localización, peso/IMC e
   historial quirúrgico.
 
@@ -76,9 +82,20 @@ source ~/tools/android-env.sh     # JDK 21 + Android SDK
 ~/tools/emulador.sh iniciar       # Arranca el emulador
 ```
 
+### Ver el informe sin montar en el móvil
+
+`InformeMuestraTest` no comprueba nada: imprime en la consola el informe
+completo con datos de ejemplo de Crohn. Es la forma rápida de revisar cómo
+se lee lo que verá el médico, sin instalar nada.
+
+```bash
+./gradlew :app:testDebugUnitTest --tests '*InformeMuestraTest*'
+# La salida está en app/build/test-results/.../system-out
+```
+
 ## Instalar en un móvil sin Play Store
 
-El APK firmado queda en `Digest-v1.0.apk`. Para instalarlo:
+El APK firmado queda en `Digest-v1.3.apk`. Para instalarlo:
 
 1. Pásalo al móvil (cable, tarjeta SD, Drive, correo…)
 2. Ábrelo desde el explorador de archivos
@@ -103,6 +120,11 @@ algo más robusto que la de ejemplo.
 ## Estado
 
 Funciona de extremo a extremo: alta del paciente, alta de medicación con
-horario, aviso a la hora exacta y registro de la toma desde la
-notificación. Queda por delante el registro detallado de deposiciones
-(Bristol), dolor localizado, nutrición enteral y las estadísticas.
+horario, aviso a la hora exacta, registro de la toma desde la
+notificación, registro de deposiciones, dolor y nutrición enteral, señales
+de alarma e informe exportable.
+
+Queda por delante la publicación en Google Play Store (hace falta una
+cuenta de desarrollador y una URL de política de privacidad) y un modo de
+copia de seguridad de los datos, que ahora mismo solo existen en el
+dispositivo: si se cambia de móvil, se pierden.
