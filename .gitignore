@@ -21,3 +21,6 @@ app/*.jks
 
 # APK compilados: se generan, no se versionan
 *.apk
+
+# Sesiones del compilador de Kotlin
+.kotlin/

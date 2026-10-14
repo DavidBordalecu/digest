@@ -16,6 +16,9 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,7 +28,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import android.content.Context
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,9 +75,81 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
         viewModel.recalcularSenales()
     }
 
+    // Confirmación de cada registro. Marcar un síntoma sin ver nada pasar
+    // deja la duda de si se ha guardado, y el paciente acaba marcándolo
+    // otra vez por si acaso.
+    val avisos = remember { SnackbarHostState() }
+    val contexto = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.resultado.collect { resultado ->
+            avisos.showSnackbar(mensajeDe(contexto, resultado))
+        }
+    }
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(avisos) },
+    ) { relleno ->
+        ContenidoHoy(
+            relleno = relleno,
+            estado = estado,
+            alAbrirDirectorio = { directorioAbierto = true },
+            alMarcarTomada = viewModel::marcarTomada,
+            alMarcarOmitida = viewModel::marcarOmitida,
+            alReponer = viewModel::volverAPendiente,
+            alAlternarSintoma = viewModel::alternarSintoma,
+        )
+    }
+
+    if (directorioAbierto) {
+        PantallaDirectorio(
+            condicion = estado.perfil?.condicion,
+            alCerrar = { directorioAbierto = false },
+        )
+    }
+}
+
+/**
+ * Traduce el resultado de un registro al texto que se confirma.
+ *
+ * No es una función `@Composable` a propósito: se invoca desde dentro de
+ * una corrutina, fuera del ciclo de recomposición, y ahí no se puede leer
+ * un recurso con `stringResource`.
+ */
+private fun mensajeDe(contexto: Context, resultado: ResultadoRegistro): String =
+    when (resultado) {
+        is ResultadoRegistro.SinSenales ->
+            contexto.getString(R.string.registro_sin_senales)
+
+        is ResultadoRegistro.ConSenales -> if (resultado.urgentes > 0) {
+            contexto.getString(R.string.registro_urgente, resultado.titulo)
+        } else {
+            contexto.getString(
+                R.string.registro_senales,
+                resultado.total,
+                resultado.titulo,
+            )
+        }
+    }
+
+@Composable
+private fun ContenidoHoy(
+    relleno: PaddingValues,
+    estado: EstadoHoy,
+    alAbrirDirectorio: () -> Unit,
+    alMarcarTomada: (TomaConDetalle) -> Unit,
+    alMarcarOmitida: (TomaConDetalle) -> Unit,
+    alReponer: (TomaConDetalle) -> Unit,
+    alAlternarSintoma: (TipoSintoma) -> Unit,
+) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = relleno.calculateTopPadding() + 16.dp,
+            bottom = relleno.calculateBottomPadding() + 16.dp,
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { CabeceraPantalla(estado.perfil) }
@@ -83,7 +160,7 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
             TarjetaSenales(
                 senales = estado.senales,
                 diasDesdeUltimaConsulta = estado.diasDesdeUltimaConsulta,
-                alVerDirectorio = { directorioAbierto = true },
+                alVerDirectorio = alAbrirDirectorio,
             )
         }
 
@@ -95,7 +172,7 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
                 TarjetaProximaToma(
                     toma = proxima,
                     vencida = proxima.horaProgramada < java.time.LocalTime.now(),
-                    alTomar = { viewModel.marcarTomada(proxima) },
+                    alTomar = { alMarcarTomada(proxima) },
                 )
             }
         }
@@ -124,9 +201,9 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
         items(estado.tomas, key = { it.id }) { toma ->
             FilaToma(
                 toma = toma,
-                alTomar = { viewModel.marcarTomada(toma) },
-                alOmitir = { viewModel.marcarOmitida(toma) },
-                alReponer = { viewModel.volverAPendiente(toma) },
+                alTomar = { alMarcarTomada(toma) },
+                alOmitir = { alMarcarOmitida(toma) },
+                alReponer = { alReponer(toma) },
             )
         }
 
@@ -173,7 +250,7 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
             SintomasDeHoy(
                 condicion = estado.perfil?.condicion,
                 marcados = estado.sintomasMarcados,
-                alAlternar = viewModel::alternarSintoma,
+                alAlternar = alAlternarSintoma,
             )
             Text(
                 text = stringResource(R.string.hoy_gravedad_ayuda),
@@ -186,13 +263,6 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
         item { Spacer(Modifier.padding(8.dp)) }
     }
 
-    // El directorio se abre a pantalla completa sobre la pantalla de hoy.
-    if (directorioAbierto) {
-        PantallaDirectorio(
-            condicion = estado.perfil?.condicion,
-            alCerrar = { directorioAbierto = false },
-        )
-    }
 }
 
 @Composable
