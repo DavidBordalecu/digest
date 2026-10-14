@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Solo se expone la carpeta de informes de la app.
+
+    Android 7+ prohíbe compartir rutas de archivo (`file://`) por motivos de
+    seguridad: cualquier app podría leerlos. `FileProvider` convierte la
+    ruta en un `content://` con permisos acotados a quien la recibe, que es
+    lo único que permite abrir un PDF con otra app o mandarlo por correo.
+-->
+<paths>
+    <files-path
+        name="informes"
+        path="documentos/" />
+</paths>

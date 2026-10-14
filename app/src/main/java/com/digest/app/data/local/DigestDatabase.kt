@@ -12,6 +12,7 @@ import com.digest.app.data.local.entity.ComidaEntity
 import com.digest.app.data.local.entity.ControlComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
+import com.digest.app.data.local.entity.DocumentoEntity
 import com.digest.app.data.local.entity.DolorEntity
 import com.digest.app.data.local.entity.HorarioEntity
 import com.digest.app.data.local.entity.ManifestacionPerianalEntity
@@ -45,8 +46,9 @@ import com.digest.app.data.local.entity.TomaEntity
         NutricionEnteralEntity::class,
         ManifestacionPerianalEntity::class,
         ControlComidaEntity::class,
+        DocumentoEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -66,6 +68,7 @@ abstract class DigestDatabase : RoomDatabase() {
     abstract fun nutricionEnteralDao(): NutricionEnteralDao
     abstract fun manifestacionPerianalDao(): ManifestacionPerianalDao
     abstract fun controlComidaDao(): ControlComidaDao
+    abstract fun documentoDao(): DocumentoDao
 
     companion object {
         private const val NOMBRE = "digest.db"
@@ -83,7 +86,7 @@ abstract class DigestDatabase : RoomDatabase() {
                 // WAL permite leer mientras se escribe: el registro de una toma
                 // desde el aviso no se solapa con la lectura de la pantalla de hoy.
                 .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)
-                .addMigrations(MIGRACION_1_2, MIGRACION_2_3)
+                .addMigrations(MIGRACION_1_2, MIGRACION_2_3, MIGRACION_3_4)
                 .build()
 
         /**
@@ -128,6 +131,35 @@ abstract class DigestDatabase : RoomDatabase() {
                 db.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS index_control_comidas_comidaId " +
                         "ON control_comidas (comidaId)",
+                )
+            }
+        }
+
+        /**
+         * Paso 3 → 4: informes médicos adjuntos.
+         *
+         * Se crea vacía. La fecha del documento va aparte de la de creación
+         * porque se sube hoy un análisis de hace dos años, y no tiene
+         * sentido inventar una fecha de prueba para un informe que aún no
+         * se ha subido.
+         */
+        val MIGRACION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS documentos (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "nombre TEXT NOT NULL, " +
+                        "tipo TEXT NOT NULL, " +
+                        "fechaDocumento INTEGER, " +
+                        "notas TEXT, " +
+                        "nombreArchivo TEXT NOT NULL, " +
+                        "mime TEXT, " +
+                        "tamanoBytes INTEGER NOT NULL, " +
+                        "creadoEn INTEGER NOT NULL)",
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS index_documentos_fechaDocumento " +
+                        "ON documentos (fechaDocumento)",
                 )
             }
         }

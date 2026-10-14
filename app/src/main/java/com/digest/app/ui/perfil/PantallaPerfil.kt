@@ -202,6 +202,15 @@ fun PantallaPerfil(modifier: Modifier = Modifier) {
             }
         }
 
+        // Los informes van después de los datos del paciente y antes del
+        // directorio: son parte de la historia, no un extra.
+        SeccionDocumentos(
+            documentos = estado.documentos,
+            alAdjuntar = viewModel::adjuntar,
+            archivoDe = viewModel::archivoDe,
+            alBorrar = viewModel::borrar,
+        )
+
         if (directorioAbierto) {
             PantallaDirectorio(
                 condicion = estado.perfil?.condicion,

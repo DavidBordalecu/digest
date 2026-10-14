@@ -5,6 +5,7 @@ import com.digest.app.data.local.ComidaDao
 import com.digest.app.data.local.ControlComidaDao
 import com.digest.app.data.local.DeposicionDao
 import com.digest.app.data.local.DiarioDao
+import com.digest.app.data.local.DocumentoDao
 import com.digest.app.data.local.DolorDao
 import com.digest.app.data.local.HorarioDao
 import com.digest.app.data.local.ManifestacionPerianalDao
@@ -19,6 +20,7 @@ import com.digest.app.data.local.entity.ComidaEntity
 import com.digest.app.data.local.entity.ControlComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
+import com.digest.app.data.local.entity.DocumentoEntity
 import com.digest.app.data.local.entity.DolorEntity
 import com.digest.app.data.local.entity.HorarioEntity
 import com.digest.app.data.local.entity.ManifestacionPerianalEntity
@@ -30,12 +32,14 @@ import com.digest.app.data.local.entity.SintomaEntity
 import com.digest.app.data.local.entity.TomaEntity
 import com.digest.app.domain.AlertasClinicas
 import com.digest.app.domain.ComidaControlada
+import com.digest.app.domain.InformeDocumento
 import com.digest.app.domain.ContextoClinico
 import com.digest.app.domain.DeposicionDia
 import com.digest.app.domain.InformePeriodo
 import com.digest.app.domain.SintomaDia
 import com.digest.app.domain.nombreLegible
 import com.digest.app.model.EstadoToma
+import com.digest.app.model.TipoDocumento
 import com.digest.app.model.TipoSintoma
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -65,6 +69,7 @@ class DigestRepository(
     private val nutricionDao: NutricionEnteralDao,
     private val perianalDao: ManifestacionPerianalDao,
     private val controlComidaDao: ControlComidaDao,
+    private val documentoDao: DocumentoDao,
 ) {
 
     // --- Perfil ---
@@ -225,6 +230,23 @@ class DigestRepository(
      * algo desde el pollo con arroz?», no un identificador.
      */
     suspend fun textoDeComida(comidaId: Long): String? = comidaDao.porId(comidaId)?.alimentos
+
+    // --- Informes médicos adjuntos ---
+
+    fun observarDocumentos(): Flow<List<DocumentoEntity>> = documentoDao.observarTodos()
+
+    suspend fun documentos(): List<DocumentoEntity> = documentoDao.todos()
+
+    suspend fun guardarDocumento(documento: DocumentoEntity): Long =
+        documentoDao.insertar(documento)
+
+    suspend fun documento(id: Long): DocumentoEntity? = documentoDao.porId(id)
+
+    suspend fun borrarDocumento(documento: DocumentoEntity) = documentoDao.borrar(documento)
+
+    /** Fecha de la última prueba de un tipo: la pregunta que más se hace. */
+    fun ultimaPruebaDe(tipo: TipoDocumento): Flow<LocalDate?> =
+        documentoDao.ultimaFechaDeTipo(tipo)
 
     // --- Deposiciones ---
 
@@ -423,6 +445,13 @@ class DigestRepository(
             sintomas = sintomasPorDia,
             comidas = comidaDao.entre(desde, hasta).groupBy { it.fecha },
             comidasControladas = comidasControladas(desde, hasta),
+            documentos = documentos().map { documento ->
+                InformeDocumento(
+                    nombre = documento.nombre,
+                    tipo = documento.tipo.nombreLegible,
+                    fecha = documento.fechaDocumento,
+                )
+            },
             diario = diarioDao.entre(desde, hasta).associateBy { it.fecha },
             pesajes = pesajeDao.entre(desde, hasta),
             senales = construirContextoClinico(perfil, deposiciones, hasta)

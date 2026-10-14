@@ -45,6 +45,7 @@ class GeneradorInformeTest {
         dolores: List<com.digest.app.data.local.entity.DolorEntity> = emptyList(),
         nutricion: List<com.digest.app.data.local.entity.NutricionEnteralEntity> = emptyList(),
         comidasControladas: List<ComidaControlada> = emptyList(),
+        documentos: List<InformeDocumento> = emptyList(),
         sintomas: Map<LocalDate, List<SintomaDia>> = emptyMap(),
         diario: Map<LocalDate, DiarioEntity> = emptyMap(),
         pesajes: List<PesajeEntity> = emptyList(),
@@ -58,6 +59,7 @@ class GeneradorInformeTest {
         dolores = dolores,
         nutricion = nutricion,
         comidasControladas = comidasControladas,
+        documentos = documentos,
         sintomas = sintomas,
         comidas = emptyMap(),
         diario = diario,
@@ -480,5 +482,30 @@ class GeneradorInformeTest {
         assertFalse(
             texto.contains("\n\n\n"),
         )
+    }
+
+    @Test
+    fun `el informe lista los informes medicos adjuntos`() {
+        val texto = GeneradorInforme.texto(
+            informe(
+                documentos = listOf(
+                    InformeDocumento("colonoscopia-2024.pdf", "Colonoscopia", LocalDate.of(2024, 3, 12)),
+                    InformeDocumento("analitica-marzo.pdf", "Analítica", LocalDate.of(2026, 3, 2)),
+                    InformeDocumento("informe-sin-fecha.pdf", "Biopsia", null),
+                ),
+            ),
+        )
+
+        assertTrue(texto.contains("INFORMES MÉDICOS ADJUNTOS"))
+        assertTrue(texto.contains("Colonoscopia — colonoscopia-2024.pdf"))
+        assertTrue(texto.contains("Fecha: 12/03/2024"))
+        assertTrue(texto.contains("Biopsia — informe-sin-fecha.pdf"))
+    }
+
+    @Test
+    fun `sin informes adjuntos no aparece la seccion`() {
+        val texto = GeneradorInforme.texto(informe())
+
+        assertFalse(texto.contains("INFORMES MÉDICOS ADJUNTOS"))
     }
 }

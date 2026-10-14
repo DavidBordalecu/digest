@@ -24,6 +24,9 @@ inflamatoria intestinal (colitis ulcerosa, Crohn y colitis indeterminada).
 - **Registro del cuerpo**: deposiciones con la escala de Bristol y la
   cantidad de sangre, episodios de dolor abdominal con su carácter y su
   localización, y volumen de nutrición enteral.
+- **Carpeta de informes médicos**: adjuntar análisis, colonoscopias,
+  biopsias o pruebas de imagen como archivos. Se copian dentro de la app,
+  no se guardan como referencia, y se comparten uno a uno o todos juntos.
 - **Señales de alarma** que avisan de lo que no debería esperar, siempre
   con el porqué y sin diagnosticar.
 - **Informe exportable** para el médico, en texto y CSV.
@@ -101,7 +104,7 @@ se lee lo que verá el médico, sin instalar nada.
 
 ## Instalar en un móvil sin Play Store
 
-El APK firmado queda en `Digest-v1.4.apk`. Para instalarlo:
+El APK firmado queda en `Digest-v1.5.apk`. Para instalarlo:
 
 1. Pásalo al móvil (cable, tarjeta SD, Drive, correo…)
 2. Ábrelo desde el explorador de archivos

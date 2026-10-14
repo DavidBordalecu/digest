@@ -35,6 +35,8 @@ data class InformePeriodo(
     val comidas: Map<LocalDate, List<ComidaEntity>>,
     /** Comidas del periodo con su control posterior, para ver la reacción. */
     val comidasControladas: List<ComidaControlada> = emptyList(),
+    /** Informes que el paciente tiene en la app, por si quiere enseñar los archivos. */
+    val documentos: List<InformeDocumento> = emptyList(),
     val diario: Map<LocalDate, DiarioEntity>,
     val pesajes: List<PesajeEntity>,
     val senales: List<SenalClinica>,
@@ -46,6 +48,13 @@ data class InformePeriodo(
     val fechas: List<LocalDate>
         get() = (0 until dias).map { desde.plusDays(it.toLong()) }
 }
+
+/** Un informe médico adjunto, para la lista del informe del paciente. */
+data class InformeDocumento(
+    val nombre: String,
+    val tipo: String,
+    val fecha: LocalDate?,
+)
 
 /** Un síntoma con su intensidad, tal como se registró un día. */
 
@@ -149,6 +158,7 @@ private fun decimal(valor: Double): String = String.format(ES, "%.1f", valor)
         seccion(s) { nutricion(it, i) }
         seccion(s) { peso(it, i) }
         seccion(s) { diario(it, i) }
+        seccion(s) { documentos(it, i) }
         seccion(s) { senales(it, i) }
 
         s.appendLine()
@@ -397,6 +407,24 @@ private fun comidas(s: StringBuilder, i: InformePeriodo) {
 
     if (sinResponder > 0) {
         s.appendLine("  Sin control pendiente: $sinResponder")
+    }
+}
+
+/**
+ * Informes médicos que el paciente tiene guardados en la app.
+ *
+ * El informe es texto y no puede llevar dentro los PDF, así que aquí solo
+ * se listan. Sirve para que el médico sepa qué tiene el paciente delante
+ * antes de que empiece a leerlo todo: un paciente con una colonoscopia de
+ * 2024 y otra de 2019 solo necesita que le digan cuáles son.
+ */
+private fun documentos(s: StringBuilder, i: InformePeriodo) {
+    if (i.documentos.isEmpty()) return
+
+    s.appendLine("INFORMES MÉDICOS ADJUNTOS")
+    i.documentos.forEach { documento ->
+        s.appendLine("  · ${documento.tipo} — ${documento.nombre}")
+        documento.fecha?.let { s.appendLine("    Fecha: ${it.format(FECHA)}") }
     }
 }
 

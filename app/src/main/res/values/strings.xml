@@ -362,4 +362,40 @@
         <item quantity="other">Guardado. %1$d avisos: %2$s</item>
     </plurals>
     <string name="registro_urgente">Guardado. AVISO URGENTE: %1$s</string>
+
+    <!-- Informes médicos adjuntos -->
+    <string name="doc_analitica">Análisis de sangre</string>
+    <string name="doc_colonoscopia">Colonoscopia</string>
+    <string name="doc_endoscopia">Endoscopia</string>
+    <string name="doc_biopisia">Biopsia</string>
+    <string name="doc_imagen">Prueba de imagen</string>
+    <string name="doc_calibre_ileal">Calibre del íleon</string>
+    <string name="doc_otro">Otro documento</string>
+    <string name="documentos_titulo">Mis informes médicos</string>
+    <string name="documentos_explicacion">Adjunta los análisis, endoscopias y pruebas que te han hecho. Se quedan en el móvil y solo se mandan cuando tú lo decides.</string>
+    <string name="documentos_vacio">Todavía no has adjuntado ningún informe</string>
+    <string name="documentos_vacio_detalle">Añade la última colonoscopia, la analítica o el informe de la biopsia para tenerlo a mano en la consulta.</string>
+    <string name="documento_anadir">Añadir informe</string>
+    <string name="documento_elegir">Elegir archivo</string>
+    <string name="documento_nombre">Nombre</string>
+    <string name="documento_nombre_pista">Colonoscopia 2024</string>
+    <string name="documento_tipo">Tipo de informe</string>
+    <string name="documento_fecha">Fecha de la prueba</string>
+    <string name="documento_fecha_desconocida">No la sé</string>
+    <string name="documento_notas">Notas</string>
+    <string name="documento_notas_pista">Qué pidió el médico, qué concluyeron…</string>
+    <string name="documento_guardar">Guardar</string>
+    <string name="documento_compartir">Compartir</string>
+    <string name="documento_borrar">Borrar</string>
+    <string name="documento_abrir">Abrir</string>
+    <string name="documento_tamano">%1$s · %2$s</string>
+    <string name="documento_sin_fecha">Sin fecha</string>
+    <string name="documento_compartir_todos">Compartir todos con el médico</string>
+    <string name="documento_compartir_todos_titulo">Compartir informes con…</string>
+    <string name="documento_borrar_confirmacion">¿Borrar «%1$s»? El archivo se elimina del móvil y no se puede recuperar.</string>
+    <string name="documento_no_abrible">No hay ninguna app en el móvil que abra este archivo.</string>
+    <string name="documento_adjuntado">Informe adjuntado</string>
+    <string name="documento_error_sin_archivo">No se ha elegido ningún archivo</string>
+    <string name="documento_ultima">Última %1$s: %2$s</string>
+    <string name="documento_ultima_desconocida">No has adjuntado ninguna %1$s</string>
 </resources>

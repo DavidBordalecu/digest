@@ -1,6 +1,7 @@
 package com.digest.app
 
 import android.app.Application
+import com.digest.app.data.AlmacenDocumentos
 import com.digest.app.data.DigestRepository
 import com.digest.app.data.local.DigestDatabase
 import com.digest.app.notificaciones.AvisosComida
@@ -16,7 +17,9 @@ import com.digest.app.notificaciones.AvisosToma
 class DigestApplication : Application() {
 
     lateinit var repositorio: DigestRepository
-        private set
+
+    /** Copia y guarda los informes que el paciente adjunta. */
+    val almacenDocumentos: AlmacenDocumentos by lazy { AlmacenDocumentos(this) }
 
     private val baseDatos by lazy { DigestDatabase.obtener(this) }
 
@@ -38,6 +41,7 @@ class DigestApplication : Application() {
             nutricionDao = baseDatos.nutricionEnteralDao(),
             perianalDao = baseDatos.manifestacionPerianalDao(),
             controlComidaDao = baseDatos.controlComidaDao(),
+            documentoDao = baseDatos.documentoDao(),
         )
 
         // Los canales deben existir antes de que salte la primera alarma.

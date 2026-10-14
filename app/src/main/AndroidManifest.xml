@@ -44,6 +44,21 @@
             android:name=".notificaciones.ReceptorAccionToma"
             android:exported="false" />
 
+        <!--
+            Comparte los informes adjuntos con otras apps. `grantUriPermissions`
+            es imprescindible: sin él, la app receptora abre el PDF pero se
+            le niega el permiso de lectura y falla.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.documentos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rutas_documentos" />
+        </provider>
+
         <!-- Publica la pregunta de control posterior a la comida. -->
         <receiver
             android:name=".notificaciones.ReceptorAvisoComida"
