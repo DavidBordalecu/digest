@@ -128,3 +128,41 @@ Queda por delante la publicación en Google Play Store (hace falta una
 cuenta de desarrollador y una URL de política de privacidad) y un modo de
 copia de seguridad de los datos, que ahora mismo solo existen en el
 dispositivo: si se cambia de móvil, se pierden.
+
+### Aparcado: cuestionario de calidad de vida (SIBDQ)
+
+Decidido no hacerlo **por ahora**, por un bloqueo legal, no técnico.
+Queda aquíToda la investigación para retomarlo sin repetir el trabajo.
+
+**Lo que se quiere**: un cuestionario de calidad de vida validado, al
+entrar por primera vez y **repetido cada dos semanas**. La repetición es
+la parte importante: un score aislado envejece mal y deja de significar
+nada a las pocas semanas; la tendencia es lo que mira el médico.
+
+**Cuál, si se hace**: el **SIBDQ** (10 ítems, escala 1-7, puntuación
+10-70) y no el IBDQ-32 (32 ítems). El SIBDQ se construyó a partir del
+IBDQ-32 y está validado contra él (Irvine 1996, *Am J Gastroenterol*
+91(8):1571-1578), mide los mismos cuatro dominios —síntomas
+intestinales, síntomas sistémicos, función emocional y función social— y
+se rellena en menos de un minuto. El IBDQ-32 añade granularidad que aquí
+no aporta y una barrera de entrada que, en un primer arranque que ya pide
+diagnóstico, año, peso, altura, zonas y antecedentes, abandona a la
+gente.
+
+**El bloqueo**: el SIBDQ es ©1989 McMaster University. PhenX y la
+literatura clínica indican que reutilizarlo requiere permiso del titular
+(McMaster Industry Liaison Office, `milo@mcmaster.ca`), también en una
+app de pago.
+
+**Si se retoma**, el orden sensato es:
+
+1. Pedir la licencia antes de escribir nada. Es un correo, no código.
+2. Mientras tanto se puede preparar el hueco: tabla en Room, pantalla,
+   cálculo del 10-70, curva histórica y su sección en el informe. Sin las
+   frases literales: inventarlas de memoria produciría algo que no es el
+   SIBDQ y no podría llamarse así.
+
+**Alternativa sin licencias**: 10 ítems propios que cubran los mismos
+cuatro dominios, puntuados 1-7. La estructura y el cálculo serían
+equivalentes, pero no sería el SIBDQ ni un instrumento validado, y no
+debe presentarse como tal.

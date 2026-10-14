@@ -23,6 +23,7 @@ import com.digest.app.model.EstadoToma
 import com.digest.app.model.TipoSintoma
 import com.digest.app.notificaciones.PlanificadorAlarmas
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -145,9 +146,18 @@ class HoyViewModel(
      * Existe porque marcar un síntoma sin que pase nada visible es
      * desconcertante: el paciente no sabe si se ha guardado, y acaba
      * marcándolo otra vez por si acaso. Con esto sabe al instante si ha
-     * quedado registrado y si haSaltado algún aviso.
+     * quedado registrado y si ha saltado algún aviso.
+     *
+     * El búfer descarta lo más viejo en vez de acumular. El aviso en
+     * pantalla tarda unos segundos y, mientras está, el paciente puede
+     * marcar tres síntomas más: solo importa el último estado, y guardar
+     * los intermedios haría que al terminar se*viera* un aviso obsoleto
+     * con el que ya no cuadra lo que hay en pantalla.
      */
-    private val _resultado = MutableSharedFlow<ResultadoRegistro>(extraBufferCapacity = 1)
+    private val _resultado = MutableSharedFlow<ResultadoRegistro>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
     val resultado: SharedFlow<ResultadoRegistro> = _resultado.asSharedFlow()
 
     val estado: StateFlow<EstadoHoy> = combine(datos, senales) { base, avisos ->
@@ -186,9 +196,15 @@ class HoyViewModel(
      * Se llama al entrar en la pantalla y después de registrar cualquier
      * síntoma o deposición: las reglas dependen del día completo, así que
      * un cambio a media mañana tiene que reflejarse sin reiniciar la app.
+     *
+     * No avisa por sí misma: al entrar en la pestaña no hay nada que
+     * confirmar con el paciente, y un aviso ahí sería ruido. Solo
+     * notifican los registros que él acaba de hacer.
      */
     fun recalcularSenales() {
-        viewModelScope.launch { recalcularYNotificar() }
+        viewModelScope.launch {
+            senales.value = construirContexto()?.let { AlertasClinicas.evaluar(it) }.orEmpty()
+        }
     }
 
     /**

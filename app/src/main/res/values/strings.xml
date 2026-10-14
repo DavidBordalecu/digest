@@ -334,6 +334,9 @@
 
     <!-- Confirmación de un registro -->
     <string name="registro_sin_senales">Guardado. Ningún aviso de consulta por ahora.</string>
-    <string name="registro_senales">Guardado. %1$d aviso(s): %2$s</string>
+    <plurals name="registro_senales">
+        <item quantity="one">Guardado. %1$d aviso: %2$s</item>
+        <item quantity="other">Guardado. %1$d avisos: %2$s</item>
+    </plurals>
     <string name="registro_urgente">Guardado. AVISO URGENTE: %1$s</string>
 </resources>

@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.digest.app.R
 import com.digest.app.data.local.TomaConDetalle
@@ -78,10 +79,16 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
     // Confirmación de cada registro. Marcar un síntoma sin ver nada pasar
     // deja la duda de si se ha guardado, y el paciente acaba marcándolo
     // otra vez por si acaso.
+    //
+    // `collectLatest` y no `collect`: si llega un registro nuevo mientras el
+    // aviso anterior sigue en pantalla, el anterior se retira y se muestra
+    // el nuevo. Con `collect` el paciente leería «ningún aviso» después de
+    // haber marcado algo que sí lo ha disparado, porque el texto llega
+    // tarde, describiendo lo que ya no es.
     val avisos = remember { SnackbarHostState() }
     val contexto = LocalContext.current
     LaunchedEffect(Unit) {
-        viewModel.resultado.collect { resultado ->
+        viewModel.resultado.collectLatest { resultado ->
             avisos.showSnackbar(mensajeDe(contexto, resultado))
         }
     }
@@ -124,8 +131,12 @@ private fun mensajeDe(contexto: Context, resultado: ResultadoRegistro): String =
         is ResultadoRegistro.ConSenales -> if (resultado.urgentes > 0) {
             contexto.getString(R.string.registro_urgente, resultado.titulo)
         } else {
-            contexto.getString(
-                R.string.registro_senales,
+            // `resources.getQuantityString` y no `getString`: en español
+            // "1 aviso" y "3 avisos" se escriben distinto, y la app solo
+            // está en español, así que no hace falta un separador.
+            contexto.resources.getQuantityString(
+                R.plurals.registro_senales,
+                resultado.total,
                 resultado.total,
                 resultado.titulo,
             )
