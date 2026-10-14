@@ -390,7 +390,7 @@
     <string name="documento_abrir">Abrir</string>
     <string name="documento_tamano">%1$s · %2$s</string>
     <string name="documento_sin_fecha">Sin fecha</string>
-    <string name="documento_compartir_todos">Compartir todos con el médico</string>
+    <string name="documento_compartir_solo_este">Compartir solo estos archivos</string>
     <string name="documento_compartir_todos_titulo">Compartir informes con…</string>
     <string name="documento_borrar_confirmacion">¿Borrar «%1$s»? El archivo se elimina del móvil y no se puede recuperar.</string>
     <string name="documento_no_abrible">No hay ninguna app en el móvil que abra este archivo.</string>
@@ -398,4 +398,13 @@
     <string name="documento_error_sin_archivo">No se ha elegido ningún archivo</string>
     <string name="documento_ultima">Última %1$s: %2$s</string>
     <string name="documento_ultima_desconocida">No has adjuntado ninguna %1$s</string>
+
+    <!-- Compartir la historia con el médico -->
+    <string name="historia_titulo">Compartir mi historia con el médico</string>
+    <string name="historia_explicacion">Se mandan juntos el resumen de tus síntomas y todos los informes que hayas adjuntado. Eliges el periodo y el destino.</string>
+    <string name="historia_compartir">Compartir con el médico</string>
+    <string name="historia_asunto">Historia clínica — Digest (%1$s a %2$s)</string>
+    <string name="historia_generando">Preparando tu historia…</string>
+    <string name="historia_error">No se pudo preparar el informe. Inténtalo de nuevo.</string>
+    <string name="historia_solo_texto">No has adjuntado ningún informe, así que se manda solo el resumen.</string>
 </resources>

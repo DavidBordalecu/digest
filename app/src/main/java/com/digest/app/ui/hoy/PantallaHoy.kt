@@ -289,6 +289,12 @@ private fun ContenidoHoy(
             )
         }
 
+        // Ir al médico no es una tarea del día, así que va después de todo
+        // lo demás: primero se ve cómo se está, luego se comparte.
+        item {
+            TarjetaCompartirHistoria(hayDocumentos = estado.hayDocumentos)
+        }
+
         item { Spacer(Modifier.padding(8.dp)) }
     }
 

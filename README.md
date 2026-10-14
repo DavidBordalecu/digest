@@ -29,7 +29,9 @@ inflamatoria intestinal (colitis ulcerosa, Crohn y colitis indeterminada).
   no se guardan como referencia, y se comparten uno a uno o todos juntos.
 - **Señales de alarma** que avisan de lo que no debería esperar, siempre
   con el porqué y sin diagnosticar.
-- **Informe exportable** para el médico, en texto y CSV.
+- **Compartir mi historia con el médico** en un solo botón: el resumen
+  escrito y todos los informes adjuntos van en el mismo envío, con el
+  periodo que elijas (7, 15 o 30 días).
 - **Ficha del paciente** con diagnóstico, localización, peso/IMC e
   historial quirúrgico.
 
@@ -104,7 +106,7 @@ se lee lo que verá el médico, sin instalar nada.
 
 ## Instalar en un móvil sin Play Store
 
-El APK firmado queda en `Digest-v1.5.apk`. Para instalarlo:
+El APK firmado queda en `Digest-v1.6.apk`. Para instalarlo:
 
 1. Pásalo al móvil (cable, tarjeta SD, Drive, correo…)
 2. Ábrelo desde el explorador de archivos

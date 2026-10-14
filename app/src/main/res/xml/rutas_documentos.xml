@@ -11,4 +11,13 @@
     <files-path
         name="informes"
         path="documentos/" />
+
+    <!--
+        El resumen que se manda junto a los informes. Va en la caché y no
+        en los datos porque es una copia desechable que se regenera cada vez
+        que se comparte, pero necesita la misma autorización que los PDF.
+    -->
+    <cache-path
+        name="resumenes"
+        path="informes/" />
 </paths>

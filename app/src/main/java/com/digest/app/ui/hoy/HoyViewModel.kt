@@ -11,6 +11,7 @@ import com.digest.app.data.DigestRepository
 import com.digest.app.data.local.TomaConDetalle
 import com.digest.app.data.local.entity.ComidaEntity
 import com.digest.app.data.local.entity.ControlComidaEntity
+import com.digest.app.data.local.entity.DocumentoEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
 import com.digest.app.data.local.entity.PerfilEntity
@@ -72,6 +73,8 @@ data class EstadoHoy(
      * que saltara la pregunta, la respuesta tiene que poder darse igual.
      */
     val controlesPendientes: List<ControlPendiente> = emptyList(),
+    /** Si el paciente tiene informes adjuntos, la historia los lleva. */
+    val hayDocumentos: Boolean = false,
 ) {
     val pendientes: List<TomaConDetalle>
         get() = tomas.filter { it.estado == EstadoToma.PENDIENTE }
@@ -127,6 +130,7 @@ private data class DatosDelDia(
     val diario: DiarioEntity?,
     val deposiciones: List<DeposicionEntity>,
     val controlesPendientes: List<ControlComidaEntity>,
+    val hayDocumentos: Boolean,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -150,6 +154,7 @@ class HoyViewModel(
         repositorio.observarDiario(fecha),
         repositorio.observarDeposiciones(fecha),
         repositorio.observarControlesPendientes(fecha),
+        repositorio.observarDocumentos(),
     ) { valores ->
         @Suppress("UNCHECKED_CAST")
         DatosDelDia(
@@ -160,6 +165,7 @@ class HoyViewModel(
             diario = valores[4] as DiarioEntity?,
             deposiciones = valores[5] as List<DeposicionEntity>,
             controlesPendientes = valores[6] as List<ControlComidaEntity>,
+            hayDocumentos = (valores[7] as List<DocumentoEntity>).isNotEmpty(),
         )
     }
 
@@ -195,6 +201,7 @@ class HoyViewModel(
             diario = base.diario,
             deposiciones = base.deposiciones,
             senales = avisos,
+            hayDocumentos = base.hayDocumentos,
             controlesPendientes = base.controlesPendientes
                 .map { control ->
                     ControlPendiente(

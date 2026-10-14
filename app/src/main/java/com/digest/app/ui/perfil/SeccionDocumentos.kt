@@ -1,5 +1,6 @@
 package com.digest.app.ui.perfil
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -22,6 +23,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -105,10 +107,14 @@ fun SeccionDocumentos(
                     )
                 }
 
-                FilledTonalButton(
+                // Aquí solo se mandan los archivos. El resumen escrito se
+                // envía desde «Compartir mi historia con el médico», en la
+                // pestaña Hoy: mandar por separado el texto y los PDF es
+                // justo lo que hace que al final se envíe solo una cosa.
+                OutlinedButton(
                     onClick = { compartirVarios(contexto, documentos, archivoDe) },
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.documento_compartir_todos)) }
+                ) { Text(stringResource(R.string.documento_compartir_solo_este)) }
             }
 
             FilledTonalButton(
@@ -368,6 +374,7 @@ private fun compartirUno(
         putExtra(Intent.EXTRA_STREAM, uri)
         putExtra(Intent.EXTRA_SUBJECT, nombre)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        clipData = ClipData.newRawUri(nombre, uri)
     }
 
     contexto.startActivity(
@@ -404,10 +411,15 @@ private fun compartirVarios(
             contexto.getString(R.string.documento_compartir_todos_titulo),
         )
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        // Ver `CompartirHistoria`: el permiso llega por el ClipData.
+        clipData = ClipData.newRawUri(
+            contexto.getString(R.string.documento_compartir_todos_titulo),
+            uris.first(),
+        ).also { datos -> uris.drop(1).forEach { datos.addItem(ClipData.Item(it)) } }
     }
 
     contexto.startActivity(
-        Intent.createChooser(intent, contexto.getString(R.string.documento_compartir_todos))
+        Intent.createChooser(intent, contexto.getString(R.string.documento_compartir_solo_este))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
     )
 }
