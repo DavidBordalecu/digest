@@ -307,6 +307,31 @@
     <string name="diario_sintomas_marcados">Síntomas de hoy: %1$d</string>
     <string name="diario_pulsa_ajustar">Pulsa para cambiar la intensidad</string>
 
+    <!-- Registro del cuerpo -->
+    <string name="cuerpo_titulo">Registro del cuerpo</string>
+    <string name="cuerpo_explicacion">Apunta deposiciones, dolor y nutrición enteral. Es lo que el médico revisa para ver cómo evoluciona la enfermedad.</string>
+    <string name="cuerpo_boton_deposicion">Deposición</string>
+    <string name="cuerpo_boton_dolor">Dolor</string>
+    <string name="cuerpo_boton_enteral">Nutrición enteral</string>
+    <string name="cuerpo_enteral_total">Hoy: %1$d ml</string>
+
+    <string name="deposicion_titulo">Registrar deposición</string>
+    <string name="deposicion_consistencia">Consistencia (escala de Bristol)</string>
+    <string name="deposicion_sangre">Sangre</string>
+    <string name="deposicion_guardar">Guardar</string>
+    <string name="deposiciones_de_hoy">Deposiciones de hoy: %1$d</string>
+
+    <string name="dolor_titulo">Registrar dolor abdominal</string>
+    <string name="dolor_intensidad">Intensidad: %1$d de 5</string>
+    <string name="dolor_caracter">Cómo es el dolor</string>
+    <string name="dolor_localizacion">Dónde lo notas</string>
+    <string name="dolor_guardar">Guardar</string>
+
+    <string name="enteral_titulo">Registrar nutrición enteral</string>
+    <string name="enteral_producto">Producto</string>
+    <string name="enteral_volumen">Volumen</string>
+    <string name="enteral_guardar">Guardar</string>
+
     <!-- Confirmación de un registro -->
     <string name="registro_sin_senales">Guardado. Ningún aviso de consulta por ahora.</string>
     <string name="registro_senales">Guardado. %1$d aviso(s): %2$s</string>

@@ -88,6 +88,9 @@ interface NutricionEnteralDao {
     @Query("SELECT COALESCE(SUM(volumenMl), 0) FROM nutricion_enteral WHERE fecha BETWEEN :desde AND :hasta")
     fun volumenRango(desde: LocalDate, hasta: LocalDate): Flow<Int>
 
+    @Query("SELECT * FROM nutricion_enteral WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
+    suspend fun entre(desde: LocalDate, hasta: LocalDate): List<NutricionEnteralEntity>
+
     @Insert
     suspend fun insertar(registro: NutricionEnteralEntity): Long
 

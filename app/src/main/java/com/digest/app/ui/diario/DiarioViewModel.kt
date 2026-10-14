@@ -15,8 +15,16 @@ import com.digest.app.data.DigestRepository
 import com.digest.app.data.local.entity.DiarioEntity
 import com.digest.app.data.local.entity.PerfilEntity
 import com.digest.app.data.local.entity.SintomaEntity
+import com.digest.app.data.local.entity.DeposicionEntity
+import com.digest.app.data.local.entity.DolorEntity
+import com.digest.app.data.local.entity.NutricionEnteralEntity
+import com.digest.app.domain.DeposicionDia
 import com.digest.app.domain.GeneradorInforme
 import com.digest.app.model.EstadoBrote
+import com.digest.app.model.LocalizacionDolor
+import com.digest.app.model.SangreEnHeces
+import com.digest.app.model.TipoDolor
+import com.digest.app.model.TipoNutricionEnteral
 import com.digest.app.model.NivelHidratacion
 import com.digest.app.model.NivelMejora
 import com.digest.app.model.SensacionGeneral
@@ -31,6 +39,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
 
 /** Periodos que se pueden exportar. */
 enum class PeriodoInforme(val dias: Int, @StringRes val etiqueta: Int) {
@@ -61,6 +70,10 @@ data class EstadoDiario(
     val notas: String = "",
     /** Síntomas marcados hoy, con su intensidad. */
     val sintomasHoy: Map<TipoSintoma, Int> = emptyMap(),
+    /** Deposiciones de hoy, para el resumen. */
+    val deposicionesHoy: List<DeposicionDia> = emptyList(),
+    /** Mililitros de nutrición entral tomados hoy. */
+    val volumenEnteralHoy: Int = 0,
     val periodo: PeriodoInforme = PeriodoInforme.SEMANA,
     val generando: Boolean = false,
 )
@@ -79,14 +92,25 @@ class DiarioViewModel(private val repositorio: DigestRepository) : ViewModel() {
     /** Informe ya generado: la interfaz lo envía y lo descarta. */
     val informeParaCompartir: StateFlow<InformeParaCompartir?> = _informe.asStateFlow()
 
-    val estado: StateFlow<EstadoDiario> = repositorio.observarPerfil()
+    /**
+     * Se combinan seis flujos y `combine` solo tiene sobrecargas hasta
+     * cinco: a partir de ahí recibe un vararg y devuelve `Array<Any?>`,
+     * de ahí las conversiones.
+     */
+val estado: StateFlow<EstadoDiario> = repositorio.observarPerfil()
         .flatMapLatest { perfil ->
             kotlinx.coroutines.flow.combine(
                 repositorio.observarDiario(fecha),
                 repositorio.observarSintomas(fecha),
+                repositorio.observarDeposiciones(fecha),
+                repositorio.volumenNutricion(fecha),
                 _periodo,
                 _generando,
-            ) { diario, sintomas, periodo, generando ->
+            ) { valores ->
+                @Suppress("UNCHECKED_CAST")
+                val diario = valores[0] as DiarioEntity?
+                val sintomas = valores[1] as List<SintomaEntity>
+                val deposiciones = valores[2] as List<DeposicionEntity>
                 EstadoDiario(
                     perfil = perfil,
                     mejora = diario?.mejora,
@@ -95,12 +119,67 @@ class DiarioViewModel(private val repositorio: DigestRepository) : ViewModel() {
                     hidratacion = diario?.hidratacion,
                     notas = notasLocales.value ?: diario?.notas.orEmpty(),
                     sintomasHoy = sintomas.associate { it.tipo to it.gravedad },
-                    periodo = periodo,
-                    generando = generando,
+                    deposicionesHoy = deposiciones.map {
+                        DeposicionDia(it.bristol, it.sangre)
+                    },
+                    volumenEnteralHoy = valores[3] as Int,
+                    periodo = valores[4] as PeriodoInforme,
+                    generando = valores[5] as Boolean,
                 )
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), EstadoDiario())
+
+    // --- Registro del cuerpo ---
+
+    fun registrarDeposicion(bristol: Int, sangre: SangreEnHeces) {
+        viewModelScope.launch {
+            repositorio.guardarDeposicion(
+                DeposicionEntity(
+                    fecha = fecha,
+                    hora = LocalTime.now(),
+                    bristol = bristol,
+                    sangre = sangre,
+                ),
+            )
+        }
+    }
+
+    fun registrarDolor(
+        intensidad: Int,
+        tipo: TipoDolor,
+        localizacion: LocalizacionDolor?,
+    ) {
+        viewModelScope.launch {
+            repositorio.guardarDolor(
+                DolorEntity(
+                    fecha = fecha,
+                    hora = LocalTime.now(),
+                    intensidad = intensidad,
+                    tipo = tipo,
+                    localizacion = localizacion,
+                ),
+            )
+        }
+    }
+
+    fun registrarNutricionEnteral(
+        producto: String?,
+        volumenMl: Int,
+        tipo: TipoNutricionEnteral,
+    ) {
+        viewModelScope.launch {
+            repositorio.guardarNutricion(
+                NutricionEnteralEntity(
+                    fecha = fecha,
+                    hora = LocalTime.now(),
+                    producto = producto,
+                    volumenMl = volumenMl,
+                    tipo = tipo,
+                ),
+            )
+        }
+    }
 
     fun elegirPeriodo(periodo: PeriodoInforme) {
         _periodo.value = periodo

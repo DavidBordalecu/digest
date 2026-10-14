@@ -382,6 +382,8 @@ class DigestRepository(
             perfil = perfil,
             tomas = tomaDao.observarRangoSincrono(desde, hasta),
             deposiciones = deposiciones,
+            dolores = dolorDao.entre(desde, hasta),
+            nutricion = nutricionDao.entre(desde, hasta),
             sintomas = sintomasPorDia,
             comidas = comidaDao.entre(desde, hasta).groupBy { it.fecha },
             diario = diarioDao.entre(desde, hasta).associateBy { it.fecha },

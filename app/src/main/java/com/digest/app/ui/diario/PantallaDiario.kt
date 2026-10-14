@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -50,6 +51,7 @@ fun PantallaDiario(modifier: Modifier = Modifier) {
     val viewModel: DiarioViewModel = viewModel(factory = DiarioViewModel.fabrica)
     val estado by viewModel.estado.collectAsStateWithLifecycle()
     var exporting by remember { mutableStateOf(false) }
+    var dialogo by remember { mutableStateOf<Dialogo?>(null) }
 
     Column(
         modifier = modifier
@@ -59,6 +61,62 @@ fun PantallaDiario(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         CabeceraPantalla(estado.perfil)
+
+        // --- Registro del cuerpo ---
+        Card(
+            Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
+        ) {
+            Column(
+                Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.cuerpo_titulo),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(R.string.cuerpo_explicacion),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                ResumenDeposiciones(estado.deposicionesHoy)
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilledTonalButton(
+                        onClick = { dialogo = Dialogo.DEPOSICION },
+                        modifier = Modifier.weight(1f),
+                    ) { Text(stringResource(R.string.cuerpo_boton_deposicion)) }
+
+                    FilledTonalButton(
+                        onClick = { dialogo = Dialogo.DOLOR },
+                        modifier = Modifier.weight(1f),
+                    ) { Text(stringResource(R.string.cuerpo_boton_dolor)) }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    FilledTonalButton(
+                        onClick = { dialogo = Dialogo.ENTERAL },
+                    ) { Text(stringResource(R.string.cuerpo_boton_enteral)) }
+
+                    if (estado.volumenEnteralHoy > 0) {
+                        Text(
+                            text = stringResource(
+                                R.string.cuerpo_enteral_total,
+                                estado.volumenEnteralHoy,
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+            }
+        }
 
         // --- Resumen de lo registrado hoy ---
         Card(
@@ -207,6 +265,36 @@ fun PantallaDiario(modifier: Modifier = Modifier) {
         }
     }
 
+    // Diálogos de registro del cuerpo. Se montan aquí y no dentro de la
+    // columna para que no se desplacen con el scroll al abrirlos.
+    when (dialogo) {
+        Dialogo.DEPOSICION -> DialogoDeposicion(
+            alGuardar = { bristol, sangre ->
+                viewModel.registrarDeposicion(bristol, sangre)
+                dialogo = null
+            },
+            alCerrar = { dialogo = null },
+        )
+
+        Dialogo.DOLOR -> DialogoDolor(
+            alGuardar = { intensidad, tipo, localizacion ->
+                viewModel.registrarDolor(intensidad, tipo, localizacion)
+                dialogo = null
+            },
+            alCerrar = { dialogo = null },
+        )
+
+        Dialogo.ENTERAL -> DialogoNutricionEnteral(
+            alGuardar = { producto, volumen, tipo ->
+                viewModel.registrarNutricionEnteral(producto, volumen, tipo)
+                dialogo = null
+            },
+            alCerrar = { dialogo = null },
+        )
+
+        null -> Unit
+    }
+
     // Compartir el informe ya generado, si lo hay. El `LaunchedEffect`
     // dentro de CompartirInforme evita volver a abrir el menú en cada
     // recomposición.
@@ -216,6 +304,9 @@ fun PantallaDiario(modifier: Modifier = Modifier) {
         viewModel.consumirInforme()
     }
 }
+
+/** Diálogos de registro que se pueden abrir desde el diario. */
+private enum class Dialogo { DEPOSICION, DOLOR, ENTERAL }
 
 /**
  * Fila de filtros reusable.

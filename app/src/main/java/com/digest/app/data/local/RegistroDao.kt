@@ -88,6 +88,9 @@ interface DolorDao {
     @Query("SELECT * FROM dolores WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<DolorEntity>>
 
+    @Query("SELECT * FROM dolores WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
+    suspend fun entre(desde: LocalDate, hasta: LocalDate): List<DolorEntity>
+
     /** Intensidad media diaria, para ver si el dolor está mejorando o no. */
     @Query(
         """

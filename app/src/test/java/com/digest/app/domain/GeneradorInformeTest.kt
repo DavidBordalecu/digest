@@ -5,12 +5,15 @@ import com.digest.app.data.local.entity.DiarioEntity
 import com.digest.app.data.local.entity.PerfilEntity
 import com.digest.app.data.local.entity.PesajeEntity
 import com.digest.app.model.Condicion
+import com.digest.app.model.LocalizacionDolor
 import com.digest.app.model.EstadoBrote
 import com.digest.app.model.EstadoToma
 import com.digest.app.model.NivelMejora
 import com.digest.app.model.SangreEnHeces
 import com.digest.app.model.SensacionGeneral
+import com.digest.app.model.TipoDolor
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
@@ -39,6 +42,8 @@ class GeneradorInformeTest {
             ultimaConsulta = hoy.minusDays(200),
         ),
         deposiciones: List<DeposicionEntity> = emptyList(),
+        dolores: List<com.digest.app.data.local.entity.DolorEntity> = emptyList(),
+        nutricion: List<com.digest.app.data.local.entity.NutricionEnteralEntity> = emptyList(),
         sintomas: Map<LocalDate, List<SintomaDia>> = emptyMap(),
         diario: Map<LocalDate, DiarioEntity> = emptyMap(),
         pesajes: List<PesajeEntity> = emptyList(),
@@ -49,6 +54,8 @@ class GeneradorInformeTest {
         perfil = perfil,
         tomas = emptyList(),
         deposiciones = deposiciones,
+        dolores = dolores,
+        nutricion = nutricion,
         sintomas = sintomas,
         comidas = emptyMap(),
         diario = diario,
@@ -82,6 +89,8 @@ class GeneradorInformeTest {
             perfil = null,
             tomas = emptyList(),
             deposiciones = emptyList(),
+            dolores = emptyList(),
+            nutricion = emptyList(),
             sintomas = emptyMap(),
             comidas = emptyMap(),
             diario = emptyMap(),
@@ -280,7 +289,23 @@ class GeneradorInformeTest {
         )
 
         assertTrue(texto.contains("[URGENTE] Fiebre alta"))
-        assertTrue(texto.contains("[REVISAR] Toca revisión"))
+        assertTrue(texto.contains("[PRONTO] Toca revisión"))
+        // Los tres niveles se nombran: el médico distingue de un vistazo lo
+        // urgente de lo que solo conviene revisar.
+        assertTrue(
+            GeneradorInforme.texto(
+                informe(
+                    senales = listOf(
+                        SenalClinica(
+                            "Rutina",
+                            "explicación",
+                            "motivo",
+                            NivelUrgencia.NORMAL,
+                        ),
+                    ),
+                ),
+            ).contains("[REVISAR] Rutina"),
+        )
     }
 
     @Test
@@ -324,4 +349,86 @@ class GeneradorInformeTest {
         val csv = GeneradorInforme.csv(informe())
         assertEquals(1, csv.lines().size)
     }
+
+    @Test
+    fun `el informe resume el dolor con su caracter y su zona`() {
+        val texto = GeneradorInforme.texto(
+            informe(
+                dolores = listOf(
+                    dolor(hoy, 4, TipoDolor.FIJO, LocalizacionDolor.FOSA_ILIACA_DERECHA),
+                    dolor(hoy, 2, TipoDolor.COLICO, LocalizacionDolor.PERIUMBILICAL),
+                    dolor(hoy.minusDays(1), 3, TipoDolor.FIJO, LocalizacionDolor.PERIUMBILICAL),
+                ),
+            ),
+        )
+
+        assertTrue(texto.contains("DOLOR ABDOMINAL"))
+        assertTrue(texto.contains("Episodios: 3"))
+        // Media de 4, 2 y 3 = 3,0 con formato español.
+        assertTrue(texto.contains("intensidad media 3,0"))
+        assertTrue(texto.contains("máxima 4 de 5"))
+        assertTrue(texto.contains("Fijo (2)"))
+        assertTrue(texto.contains("Cólico (1)"))
+        assertTrue(texto.contains("Fosa ilíaca derecha"))
+    }
+
+    @Test
+    fun `sin dolor registrado el informe lo dice`() {
+        val texto = GeneradorInforme.texto(informe())
+
+        assertTrue(texto.contains("DOLOR ABDOMINAL"))
+        assertTrue(texto.contains("Ninguno registrado"))
+    }
+
+    @Test
+    fun `la nutricion enteral se contabiliza por volumen diario`() {
+        val texto = GeneradorInforme.texto(
+            informe(
+                nutricion = listOf(
+                    enteral(hoy, 1000, "Nutribiomil"),
+                    enteral(hoy, 500, "Nutribiomil"),
+                    enteral(hoy.minusDays(1), 1500, "Nutribiomil"),
+                ),
+            ),
+        )
+
+        assertTrue(texto.contains("NUTRICIÓN ENTERAL"))
+        assertTrue(texto.contains("Total: 3000 ml"))
+        // 3000 ml repartidos en 7 días.
+        assertTrue(texto.contains("428,6 ml al día"))
+        assertTrue(texto.contains("Días con nutrición enteral: 2"))
+        assertTrue(texto.contains("Producto: Nutribiomil"))
+    }
+
+    @Test
+    fun `sin nutricion enteral no aparece la seccion`() {
+        val texto = GeneradorInforme.texto(informe())
+
+        assertFalse(texto.contains("NUTRICIÓN ENTERAL"))
+    }
+
+    private fun dolor(
+        fecha: LocalDate,
+        intensidad: Int,
+        tipo: TipoDolor,
+        localizacion: LocalizacionDolor? = null,
+    ) = com.digest.app.data.local.entity.DolorEntity(
+        fecha = fecha,
+        hora = LocalTime.of(9, 0),
+        intensidad = intensidad,
+        tipo = tipo,
+        localizacion = localizacion,
+    )
+
+    private fun enteral(
+        fecha: LocalDate,
+        volumenMl: Int,
+        producto: String?,
+    ) = com.digest.app.data.local.entity.NutricionEnteralEntity(
+        fecha = fecha,
+        hora = LocalTime.of(9, 0),
+        producto = producto,
+        volumenMl = volumenMl,
+        tipo = com.digest.app.model.TipoNutricionEnteral.PARCIAL,
+    )
 }

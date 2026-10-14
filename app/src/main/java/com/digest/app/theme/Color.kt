@@ -1,5 +1,6 @@
 package com.digest.app.theme
 
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -47,12 +48,23 @@ val Gravedad = listOf(
     Color(0xFFC62828), // 5 intensa
 )
 
-/** Consistencia según la escala de Bristol. */
+/**
+ * Color de una consistencia de heces según la escala de Bristol.
+ *
+ * Hay siete niveles y seis tonos: del 1 al 3 comparten el marrón porque
+ * clinicamente se leen igual. El índice se acota porque el array es más
+ * corto que el rango y un descuido aquí es un fallo en pantalla.
+ */
+@Stable
+fun bristolColor(nivel: Int): Color = Bristol[(nivel - 1).coerceIn(0, Bristol.lastIndex)]
+
+/** Consistencia según la escala de Bristol. Del estreñimiento a la diarrea. */
 val Bristol = listOf(
-    Color(0xFF8D6E63), // 1-2 estreñimiento
-    Color(0xFFA1887F), // 3
-    Color(0xFF66BB6A), // 4 ideal
-    Color(0xFFFFB74D), // 5
-    Color(0xFFE57373), // 6
-    Color(0xFFC62828), // 7
+    Color(0xFF8D6E63), // 1 · heces duras sueltas
+    Color(0xFF8D6E63), // 2 · salchicha grumosa
+    Color(0xFFA1887F), // 3 · salchicha con grietas
+    Color(0xFF66BB6A), // 4 · suave y lisa (ideal)
+    Color(0xFFFFB74D), // 5 · bordes definidos
+    Color(0xFFE57373), // 6 · bordes deshilachados
+    Color(0xFFC62828), // 7 · líquidas
 )

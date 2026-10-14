@@ -4,6 +4,8 @@ import com.digest.app.data.local.TomaConDetalle
 import com.digest.app.data.local.entity.ComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
+import com.digest.app.data.local.entity.DolorEntity
+import com.digest.app.data.local.entity.NutricionEnteralEntity
 import com.digest.app.data.local.entity.PerfilEntity
 import com.digest.app.data.local.entity.PesajeEntity
 import com.digest.app.model.Afectacion
@@ -26,6 +28,8 @@ data class InformePeriodo(
     val perfil: PerfilEntity?,
     val tomas: List<TomaConDetalle>,
     val deposiciones: List<DeposicionEntity>,
+    val dolores: List<DolorEntity>,
+    val nutricion: List<NutricionEnteralEntity>,
     val sintomas: Map<LocalDate, List<SintomaDia>>,
     val comidas: Map<LocalDate, List<ComidaEntity>>,
     val diario: Map<LocalDate, DiarioEntity>,
@@ -90,6 +94,10 @@ object GeneradorInforme {
         resumenSintomas(s, i)
         s.appendLine()
         deposiciones(s, i)
+        s.appendLine()
+        dolor(s, i)
+        s.appendLine()
+        nutricion(s, i)
         s.appendLine()
         peso(s, i)
         s.appendLine()
@@ -241,6 +249,65 @@ object GeneradorInforme {
         s.appendLine("  Con sangre: $conSangre")
     }
 
+    /**
+     * Dolor abdominal: intensidad, carácter y localización.
+     *
+     * El desglose por carácter y por zona es lo que distingue un espasmo de
+     * un dolor inflamatorio fijo, así que se listan los episodios
+     * fuertes en lugar de quedarse solo con la media.
+     */
+    private fun dolor(s: StringBuilder, i: InformePeriodo) {
+        s.appendLine("DOLOR ABDOMINAL")
+        if (i.dolores.isEmpty()) {
+            s.appendLine("  Ninguno registrado")
+            return
+        }
+
+        val media = i.dolores.map { it.intensidad }.average()
+        val maximo = i.dolores.maxOf { it.intensidad }
+        s.appendLine(
+            "  Episodios: ${i.dolores.size} " +
+                "(intensidad media ${decimal(media)}, máxima $maximo de 5)",
+        )
+
+        val porTipo = i.dolores.groupingBy { it.tipo }.eachCount()
+            .toList().sortedByDescending { it.second }
+        s.appendLine(
+            "  Por carácter: " + porTipo.joinToString(", ") {
+                "${it.first.nombreLegible} (${it.second})"
+            },
+        )
+
+        val zonas = i.dolores.mapNotNull { it.localizacion }.distinct()
+        if (zonas.isNotEmpty()) {
+            s.appendLine("  Zonas: " + zonas.joinToString(", ") { it.nombreLegible })
+        }
+    }
+
+    /**
+     * Nutrición enteral: el volumen es lo que se contabiliza en consulta,
+     * así que es el total diario el dato que encabeza la sección.
+     */
+    private fun nutricion(s: StringBuilder, i: InformePeriodo) {
+        if (i.nutricion.isEmpty()) return
+        s.appendLine("NUTRICIÓN ENTERAL")
+
+        val total = i.nutricion.sumOf { it.volumenMl }
+        val mediaDiaria = total.toDouble() / i.dias
+        s.appendLine(
+            "  Total: $total ml (media ${decimal(mediaDiaria)} ml al día, " +
+                "meta habitual 1.500-2.000 ml)",
+        )
+        s.appendLine(
+            "  Días con nutrición enteral: ${i.nutricion.map { it.fecha }.distinct().size}",
+        )
+
+        val productos = i.nutricion.mapNotNull { it.producto }.filter { it.isNotBlank() }
+        if (productos.isNotEmpty()) {
+            s.appendLine("  Producto: " + productos.distinct().joinToString(", "))
+        }
+    }
+
     private fun peso(s: StringBuilder, i: InformePeriodo) {
         if (i.pesajes.isEmpty()) return
         s.appendLine("PESO")
@@ -283,8 +350,15 @@ object GeneradorInforme {
             s.appendLine("  Ninguna")
             return
         }
+        // El nivel se nombra con las tres palabras y no con dos etiquetas
+        // genéricas: el médico tiene que distinguir de un vistazo lo que
+        // amerita contacto inmediato de lo que solo conviene revisar.
         for (senal in i.senales) {
-            val nivel = if (senal.nivel == NivelUrgencia.URGENTE) "URGENTE" else "REVISAR"
+            val nivel = when (senal.nivel) {
+                NivelUrgencia.URGENTE -> "URGENTE"
+                NivelUrgencia.PRONTO -> "PRONTO"
+                NivelUrgencia.NORMAL -> "REVISAR"
+            }
             s.appendLine("  [$nivel] ${senal.titulo} — ${senal.porque}")
         }
     }
