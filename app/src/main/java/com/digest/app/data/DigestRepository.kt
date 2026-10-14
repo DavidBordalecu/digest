@@ -190,6 +190,10 @@ class DigestRepository(
 
     suspend fun borrarComida(id: Long) = comidaDao.borrar(id)
 
+    /** Comidas de días previos, para rellenar rápido lo que ya se comió. */
+    suspend fun alimentosRecientes(antesDe: LocalDate): List<String> =
+        comidaDao.alimentosRecientes(antesDe)
+
     // --- Deposiciones ---
 
     fun observarDeposiciones(fecha: LocalDate): Flow<List<DeposicionEntity>> =

@@ -25,6 +25,22 @@ interface ComidaDao {
     @Query("SELECT * FROM comidas WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha, hora")
     suspend fun entre(desde: LocalDate, hasta: LocalDate): List<ComidaEntity>
 
+    /**
+     * Comidas anotadas en días anteriores, para proponer lo que ya se
+     * comió. Es lo que hace rápido rellenar: el paciente suele repetir
+     * comidas, y escribir «pollo con arroz» cada día es lo que hace que
+     * termine sin escribir nada.
+     */
+    @Query(
+        """
+        SELECT DISTINCT alimentos FROM comidas
+        WHERE alimentos IS NOT NULL AND alimentos <> '' AND fecha < :antesDe
+        ORDER BY fecha DESC
+        LIMIT :limite
+        """,
+    )
+    suspend fun alimentosRecientes(antesDe: LocalDate, limite: Int = 8): List<String>
+
     @Insert
     suspend fun insertar(comida: ComidaEntity): Long
 

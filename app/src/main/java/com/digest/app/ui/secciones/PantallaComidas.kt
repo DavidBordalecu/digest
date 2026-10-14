@@ -16,6 +16,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,11 +40,12 @@ import com.digest.app.ui.componentes.Vacio
 fun PantallaComidas(modifier: Modifier = Modifier) {
     val viewModel: ComidasViewModel = viewModel(factory = ComidasViewModel.fabrica)
     val estado by viewModel.estado.collectAsStateWithLifecycle()
+    var dialogoAbierto by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingActionButton(onClick = viewModel::nuevaComida) {
+            FloatingActionButton(onClick = { dialogoAbierto = true }) {
                 Text("+", style = MaterialTheme.typography.headlineSmall)
             }
         },
@@ -71,6 +75,18 @@ fun PantallaComidas(modifier: Modifier = Modifier) {
                 FilaComida(comida, alBorrar = { viewModel.borrar(comida.id) })
             }
         }
+    }
+
+    if (dialogoAbierto) {
+        DialogoComida(
+            tipoSugerido = estado.tipoSugerido,
+            alimentosRecientes = estado.alimentosRecientes,
+            alGuardar = { tipo, alimentos, hora ->
+                viewModel.guardarComida(tipo, alimentos, hora)
+                dialogoAbierto = false
+            },
+            alCerrar = { dialogoAbierto = false },
+        )
     }
 }
 

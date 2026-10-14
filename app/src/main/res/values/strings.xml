@@ -130,6 +130,14 @@
     <string name="comida_merienda">Merienda</string>
     <string name="comida_cena">Cena</string>
     <string name="comida_nocturno">Tarde / nocturno</string>
+    <string name="comida_registrar">Registrar comida</string>
+    <string name="comida_alimentos">¿Qué has comido?</string>
+    <string name="comida_alimentos_pista">Pollo con arroz, sopa, yogur…</string>
+    <string name="comida_recientes">Lo último que anotaste</string>
+    <string name="comida_tipo">Tipo de comida</string>
+    <string name="comida_guardar">Guardar</string>
+    <string name="comida_hora">Hora: %1$s</string>
+    <string name="comida_hora_ahora">Ahora</string>
 
     <string name="enteral_exclusiva">Nutrición enteral exclusiva</string>
     <string name="enteral_parcial">Nutrición enteral parcial</string>

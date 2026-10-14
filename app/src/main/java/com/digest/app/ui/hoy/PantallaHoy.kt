@@ -165,16 +165,6 @@ private fun ContenidoHoy(
     ) {
         item { CabeceraPantalla(estado.perfil) }
 
-        // Las señales van justo bajo la cabecera: si hay algo que consultar,
-        // es lo primero que se ve y lo primero que hay que atender.
-        item {
-            TarjetaSenales(
-                senales = estado.senales,
-                diasDesdeUltimaConsulta = estado.diasDesdeUltimaConsulta,
-                alVerDirectorio = alAbrirDirectorio,
-            )
-        }
-
         item { AvisoPermisos() }
 
         // --- Próxima toma ---
@@ -268,6 +258,22 @@ private fun ContenidoHoy(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+
+        // Las señales van al final, debajo de los síntomas.
+        //
+        // Estaban arriba, debajo de la cabecera, y ese es el peor sitio
+        // posible: la tarjeta es larga (qué ha pasado, por qué salta, y
+        // el descargo de que la app no diagnostica) y empujaba hacia abajo
+        // lo único que no se puede dejar para más tarde, que es la toma
+        // de medicación. Arriba obligaba a apartar la vista de la
+        // medicación para leer un aviso.
+        item {
+            TarjetaSenales(
+                senales = estado.senales,
+                diasDesdeUltimaConsulta = estado.diasDesdeUltimaConsulta,
+                alVerDirectorio = alAbrirDirectorio,
             )
         }
 
