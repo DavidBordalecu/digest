@@ -15,6 +15,12 @@ inflamatoria intestinal (colitis ulcerosa, Crohn y colitis indeterminada).
 - **Cuestionario de síntomas** adaptado a la enfermedad del paciente.
 - **Diario diario**: si la medicación mejora, cómo se siente, estado del
   brote e hidratación.
+- **Registro de comidas** con lo que se ha comido, no solo el tipo. Las
+  comidas anteriores se ofrecen con un toque, porque se repiten.
+- **Control posterior a la comida**: dos horas después se pregunta si se
+  ha notado algún cambio. Sirve para construir la relación entre lo que se
+  ha comido y lo que ha pasado después, que el paciente no consigue apuntar
+  por su cuenta.
 - **Registro del cuerpo**: deposiciones con la escala de Bristol y la
   cantidad de sangre, episodios de dolor abdominal con su carácter y su
   localización, y volumen de nutrición enteral.
@@ -95,7 +101,7 @@ se lee lo que verá el médico, sin instalar nada.
 
 ## Instalar en un móvil sin Play Store
 
-El APK firmado queda en `Digest-v1.3.apk`. Para instalarlo:
+El APK firmado queda en `Digest-v1.4.apk`. Para instalarlo:
 
 1. Pásalo al móvil (cable, tarjeta SD, Drive, correo…)
 2. Ábrelo desde el explorador de archivos
