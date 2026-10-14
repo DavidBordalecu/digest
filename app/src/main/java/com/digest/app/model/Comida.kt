@@ -9,13 +9,23 @@ import com.digest.app.R
  * El horario importa tanto como el contenido: permite correlacionar lo que se
  * ingiere con la aparición de síntomas horas después.
  */
-enum class TipoComida(@StringRes val displayName: Int, val horaSugerida: Int) {
-    DESAYUNO(R.string.comida_desayuno, 8),
-    MEDIA_MANANA(R.string.comida_media_manana, 11),
-    ALMUERZO(R.string.comida_almuerzo, 14),
-    MERIENDA(R.string.comida_merienda, 17),
-    CENA(R.string.comida_cena, 21),
-    NOCTURNO(R.string.comida_nocturno, 2),
+enum class TipoComida(
+    @StringRes val displayName: Int,
+    val horaSugerida: Int,
+    /**
+     * Texto plano equivalente a `displayName`.
+     *
+     * Lo usa el informe, que se genera sin contexto de Android y no puede
+     * resolver un recurso.
+     */
+    val nombreLegible: String,
+) {
+    DESAYUNO(R.string.comida_desayuno, 8, "Desayuno"),
+    MEDIA_MANANA(R.string.comida_media_manana, 11, "Media mañana"),
+    ALMUERZO(R.string.comida_almuerzo, 14, "Almuerzo"),
+    MERIENDA(R.string.comida_merienda, 17, "Merienda"),
+    CENA(R.string.comida_cena, 21, "Cena"),
+    NOCTURNO(R.string.comida_nocturno, 2, "Nocturno"),
 }
 
 /**

@@ -19,6 +19,9 @@ interface ComidaDao {
     @Query("SELECT * FROM comidas WHERE fecha = :fecha ORDER BY hora")
     fun observarDelDia(fecha: LocalDate): Flow<List<ComidaEntity>>
 
+    @Query("SELECT * FROM comidas WHERE id = :id LIMIT 1")
+    suspend fun porId(id: Long): ComidaEntity?
+
     @Query("SELECT * FROM comidas WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC, hora")
     fun observarRango(desde: LocalDate, hasta: LocalDate): Flow<List<ComidaEntity>>
 

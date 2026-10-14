@@ -2,6 +2,7 @@ package com.digest.app.data
 
 import com.digest.app.data.local.CirugiaDao
 import com.digest.app.data.local.ComidaDao
+import com.digest.app.data.local.ControlComidaDao
 import com.digest.app.data.local.DeposicionDao
 import com.digest.app.data.local.DiarioDao
 import com.digest.app.data.local.DolorDao
@@ -15,6 +16,7 @@ import com.digest.app.data.local.SintomaDao
 import com.digest.app.data.local.TomaDao
 import com.digest.app.data.local.entity.CirugiaEntity
 import com.digest.app.data.local.entity.ComidaEntity
+import com.digest.app.data.local.entity.ControlComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
 import com.digest.app.data.local.entity.DolorEntity
@@ -27,6 +29,7 @@ import com.digest.app.data.local.entity.PesajeEntity
 import com.digest.app.data.local.entity.SintomaEntity
 import com.digest.app.data.local.entity.TomaEntity
 import com.digest.app.domain.AlertasClinicas
+import com.digest.app.domain.ComidaControlada
 import com.digest.app.domain.ContextoClinico
 import com.digest.app.domain.DeposicionDia
 import com.digest.app.domain.InformePeriodo
@@ -35,6 +38,7 @@ import com.digest.app.domain.nombreLegible
 import com.digest.app.model.EstadoToma
 import com.digest.app.model.TipoSintoma
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -60,6 +64,7 @@ class DigestRepository(
     private val pesajeDao: PesajeDao,
     private val nutricionDao: NutricionEnteralDao,
     private val perianalDao: ManifestacionPerianalDao,
+    private val controlComidaDao: ControlComidaDao,
 ) {
 
     // --- Perfil ---
@@ -193,6 +198,33 @@ class DigestRepository(
     /** Comidas de días previos, para rellenar rápido lo que ya se comió. */
     suspend fun alimentosRecientes(antesDe: LocalDate): List<String> =
         comidaDao.alimentosRecientes(antesDe)
+
+    // --- Control posterior a la comida ---
+
+    fun observarControlesPendientes(fecha: LocalDate): Flow<List<ControlComidaEntity>> =
+        controlComidaDao.observarPendientes(fecha)
+
+    suspend fun controlesPendientes(fecha: LocalDate): List<ControlComidaEntity> =
+        controlComidaDao.observarPendientes(fecha).first()
+
+    /** Guarda el control y devuelve su identificador, que es el del aviso. */
+    suspend fun guardarControlComida(control: ControlComidaEntity): Long =
+        controlComidaDao.guardar(control)
+
+    suspend fun responderControl(id: Long, huboCambios: Boolean) {
+        controlComidaDao.responder(id, huboCambios, LocalTime.now().toString())
+    }
+
+    suspend fun borrarControlDeComida(comidaId: Long) =
+        controlComidaDao.borrarDeComida(comidaId)
+
+    /**
+     * Qué se comió en una comida, para que la pregunta sea concreta.
+     *
+     * Devuelve solo el texto de los alimentos: el aviso dice «¿has notado
+     * algo desde el pollo con arroz?», no un identificador.
+     */
+    suspend fun textoDeComida(comidaId: Long): String? = comidaDao.porId(comidaId)?.alimentos
 
     // --- Deposiciones ---
 
@@ -390,12 +422,41 @@ class DigestRepository(
             nutricion = nutricionDao.entre(desde, hasta),
             sintomas = sintomasPorDia,
             comidas = comidaDao.entre(desde, hasta).groupBy { it.fecha },
+            comidasControladas = comidasControladas(desde, hasta),
             diario = diarioDao.entre(desde, hasta).associateBy { it.fecha },
             pesajes = pesajeDao.entre(desde, hasta),
             senales = construirContextoClinico(perfil, deposiciones, hasta)
                 ?.let { AlertasClinicas.evaluar(it) }
                 .orEmpty(),
         )
+    }
+
+    /**
+     * Une las comidas del periodo con el resultado de su control.
+     *
+     * Se cruzan en Kotlin y no con una consulta con `JOIN`: la lista es
+     * pequeña —unas cuantas comidas al día durante una semana— y el
+     * `LEFT JOIN` dejaría fuera las comidas sin control, que son
+     * justamente las que hay que poder mostrar como «sin control pendiente».
+     */
+    private suspend fun comidasControladas(
+        desde: LocalDate,
+        hasta: LocalDate,
+    ): List<ComidaControlada> {
+        val comidas = comidaDao.entre(desde, hasta)
+        if (comidas.isEmpty()) return emptyList()
+
+        val controles = controlComidaDao.entre(desde, hasta).associateBy { it.comidaId }
+
+        return comidas.map { comida ->
+            ComidaControlada(
+                fecha = comida.fecha,
+                hora = comida.hora,
+                tipo = comida.tipo.nombreLegible,
+                alimentos = comida.alimentos,
+                huboCambios = controles[comida.id]?.huboCambios,
+            )
+        }
     }
 
     /**

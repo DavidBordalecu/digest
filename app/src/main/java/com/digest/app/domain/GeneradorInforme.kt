@@ -16,6 +16,7 @@ import com.digest.app.model.NivelHidratacion
 import com.digest.app.model.NivelMejora
 import com.digest.app.model.SensacionGeneral
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -32,6 +33,8 @@ data class InformePeriodo(
     val nutricion: List<NutricionEnteralEntity>,
     val sintomas: Map<LocalDate, List<SintomaDia>>,
     val comidas: Map<LocalDate, List<ComidaEntity>>,
+    /** Comidas del periodo con su control posterior, para ver la reacción. */
+    val comidasControladas: List<ComidaControlada> = emptyList(),
     val diario: Map<LocalDate, DiarioEntity>,
     val pesajes: List<PesajeEntity>,
     val senales: List<SenalClinica>,
@@ -45,6 +48,18 @@ data class InformePeriodo(
 }
 
 /** Un síntoma con su intensidad, tal como se registró un día. */
+
+/** Una comida con el resultado de su control posterior. */
+data class ComidaControlada(
+    val fecha: LocalDate,
+    val hora: LocalTime,
+    val tipo: String,
+    val alimentos: String?,
+    /** true = notó cambios, false = nada, null = todavía sin responder. */
+    val huboCambios: Boolean?,
+)
+
+/** Lo que se pinta en la pantalla de hoy. */
 data class SintomaDia(val nombre: String, val gravedad: Int)
 
 /**
@@ -54,6 +69,25 @@ data class SintomaDia(val nombre: String, val gravedad: Int)
  * mensajería o se lleva impreso, y no necesita que el médico tenga nada
  * instalado. Para el análisis fino se exporta también un CSV de síntomas.
  */
+/**
+ * Añade una sección al informe solo si tiene algo que decir.
+ *
+ * Las secciones opcionales —peso, nutrición enteral— se saltan cuando no
+ * hay datos, pero la línea en blanco que las separaba se quedaba igualmente
+ * y el informe salía con huecos. Esto es un documento que va a leer un
+ * médico: los huecos se notan.
+ */
+private fun seccion(s: StringBuilder, bloque: (StringBuilder) -> Unit) {
+    val propio = StringBuilder()
+    bloque(propio)
+
+    val contenido = propio.toString().trimEnd()
+    if (contenido.isEmpty()) return
+
+    s.appendLine()
+    s.appendLine(contenido)
+}
+
 object GeneradorInforme {
 
     /** Español de España. `Locale(...)` está obsoleto desde Java 19. */
@@ -73,7 +107,26 @@ object GeneradorInforme {
      * informe médico esa inconsistencia se nota, así que se fija aquí.
      */
 
-    private fun decimal(valor: Double): String = String.format(ES, "%.1f", valor)
+    /**
+ * Añade una sección al informe solo si tiene algo que decir.
+ *
+ * Las secciones opcionales —peso, nutrición enteral— se saltan cuando no
+ * hay datos, pero la línea en blanco que las separaba se quedaba igualmente
+ * y el informe salía con huecos. Esto es un documento que va a leer un
+ * médico: los huecos se notan.
+ */
+private fun seccion(s: StringBuilder, bloque: (StringBuilder) -> Unit) {
+    val propio = StringBuilder()
+    bloque(propio)
+
+    val contenido = propio.toString().trimEnd()
+    if (contenido.isEmpty()) return
+
+    s.appendLine()
+    s.appendLine(contenido)
+}
+
+private fun decimal(valor: Double): String = String.format(ES, "%.1f", valor)
 
     private fun decimalConSigno(valor: Double): String = String.format(ES, "%+.1f", valor)
 
@@ -88,22 +141,15 @@ object GeneradorInforme {
         s.appendLine()
 
         encabezado(s, i)
-        s.appendLine()
-        adherencia(s, i)
-        s.appendLine()
-        resumenSintomas(s, i)
-        s.appendLine()
-        deposiciones(s, i)
-        s.appendLine()
-        dolor(s, i)
-        s.appendLine()
-        nutricion(s, i)
-        s.appendLine()
-        peso(s, i)
-        s.appendLine()
-        diario(s, i)
-        s.appendLine()
-        senales(s, i)
+        seccion(s) { adherencia(it, i) }
+        seccion(s) { resumenSintomas(it, i) }
+        seccion(s) { deposiciones(it, i) }
+        seccion(s) { comidas(it, i) }
+        seccion(s) { dolor(it, i) }
+        seccion(s) { nutricion(it, i) }
+        seccion(s) { peso(it, i) }
+        seccion(s) { diario(it, i) }
+        seccion(s) { senales(it, i) }
 
         s.appendLine()
         s.appendLine(
@@ -308,7 +354,53 @@ object GeneradorInforme {
         }
     }
 
-    private fun peso(s: StringBuilder, i: InformePeriodo) {
+    /**
+ * Comidas y reacción posterior.
+ *
+ * Es la correlación que el paciente no consigue apuntar por su cuenta:
+ * nadie apunta que dos horas después de un plato были cólicos, porque a
+ * esas horas ya está pensando en otra cosa. Aquí queda escrito, y de un
+ * vistazo se ve qué se repite cuando la reacción fue mala.
+ *
+ * Se listan solo las que provokearon cambios, y al final las que se
+ * toleraron bien: las dos listas soninformativas, pero al médico le
+ * interesa sobre todo la primera.
+ */
+private fun comidas(s: StringBuilder, i: InformePeriodo) {
+    if (i.comidasControladas.isEmpty()) return
+
+    s.appendLine("COMIDAS Y REACCIÓN")
+
+    val conCambios = i.comidasControladas.filter { it.huboCambios == true }
+    val sinCambios = i.comidasControladas.filter { it.huboCambios == false }
+    val sinResponder = i.comidasControladas.count { it.huboCambios == null }
+
+    if (conCambios.isEmpty()) {
+        s.appendLine("  Ninguna comidaCollectorshooting síntomas")
+    } else {
+        s.appendLine("  Con cambios después:")
+        conCambios.forEach { comida ->
+            s.appendLine("    · ${comida.hora.toString().take(5)} ${comida.tipo}")
+            comida.alimentos?.let { s.appendLine("      $it") }
+        }
+    }
+
+    if (sinCambios.isNotEmpty()) {
+        s.appendLine("  Se toleraron bien: ${sinCambios.size}")
+        sinCambios
+            .filter { !it.alimentos.isNullOrBlank() }
+            .mapNotNull { it.alimentos }
+            .distinct()
+            .take(8)
+            .forEach { s.appendLine("    · $it") }
+    }
+
+    if (sinResponder > 0) {
+        s.appendLine("  Sin control pendiente: $sinResponder")
+    }
+}
+
+private fun peso(s: StringBuilder, i: InformePeriodo) {
         if (i.pesajes.isEmpty()) return
         s.appendLine("PESO")
         val primero = i.pesajes.first()

@@ -3,6 +3,7 @@ package com.digest.app
 import android.app.Application
 import com.digest.app.data.DigestRepository
 import com.digest.app.data.local.DigestDatabase
+import com.digest.app.notificaciones.AvisosComida
 import com.digest.app.notificaciones.AvisosToma
 
 /**
@@ -36,9 +37,11 @@ class DigestApplication : Application() {
             pesajeDao = baseDatos.pesajeDao(),
             nutricionDao = baseDatos.nutricionEnteralDao(),
             perianalDao = baseDatos.manifestacionPerianalDao(),
+            controlComidaDao = baseDatos.controlComidaDao(),
         )
 
         // Los canales deben existir antes de que salte la primera alarma.
         AvisosToma.crearCanales(this)
+        AvisosComida.crearCanal(this)
     }
 }

@@ -10,18 +10,21 @@ import com.digest.app.DigestApplication
 import com.digest.app.data.DigestRepository
 import com.digest.app.data.local.TomaConDetalle
 import com.digest.app.data.local.entity.ComidaEntity
+import com.digest.app.data.local.entity.ControlComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
 import com.digest.app.data.local.entity.PerfilEntity
 import com.digest.app.data.local.entity.SintomaEntity
 import com.digest.app.domain.AlertasClinicas
 import com.digest.app.domain.ContextoClinico
+import com.digest.app.domain.ControlComida
 import com.digest.app.domain.DeposicionDia
 import com.digest.app.domain.NivelUrgencia
 import com.digest.app.domain.SenalClinica
 import com.digest.app.model.EstadoToma
 import com.digest.app.model.TipoSintoma
 import com.digest.app.notificaciones.PlanificadorAlarmas
+import com.digest.app.notificaciones.PlanificadorControlComida
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +40,18 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
+/**
+ * Control de comida pendiente, con lo que se comió para que la pregunta
+ * sea concreta.
+ */
+data class ControlPendiente(
+    val id: Long,
+    val comidaId: Long,
+    val horaComida: LocalTime,
+    val alimentos: String?,
+    val programadoPara: LocalTime,
+)
+
 /** Lo que se pinta en la pantalla de hoy. */
 data class EstadoHoy(
     val perfil: PerfilEntity? = null,
@@ -49,6 +64,14 @@ data class EstadoHoy(
     val rachaSintomas: Map<TipoSintoma, Int> = emptyMap(),
     /** Señales de alarma activas, ordenadas de más a menos urgente. */
     val senales: List<SenalClinica> = emptyList(),
+    /**
+     * Controles de comida esperando respuesta.
+     *
+     * Se muestran dentro de la app y no solo en la notificación: sin
+     * permiso de avisos, o simplemente porque se abrió la app antes de
+     * que saltara la pregunta, la respuesta tiene que poder darse igual.
+     */
+    val controlesPendientes: List<ControlPendiente> = emptyList(),
 ) {
     val pendientes: List<TomaConDetalle>
         get() = tomas.filter { it.estado == EstadoToma.PENDIENTE }
@@ -103,6 +126,7 @@ private data class DatosDelDia(
     val sintomas: List<SintomaEntity>,
     val diario: DiarioEntity?,
     val deposiciones: List<DeposicionEntity>,
+    val controlesPendientes: List<ControlComidaEntity>,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -125,6 +149,7 @@ class HoyViewModel(
         repositorio.observarSintomas(fecha),
         repositorio.observarDiario(fecha),
         repositorio.observarDeposiciones(fecha),
+        repositorio.observarControlesPendientes(fecha),
     ) { valores ->
         @Suppress("UNCHECKED_CAST")
         DatosDelDia(
@@ -134,6 +159,7 @@ class HoyViewModel(
             sintomas = valores[3] as List<SintomaEntity>,
             diario = valores[4] as DiarioEntity?,
             deposiciones = valores[5] as List<DeposicionEntity>,
+            controlesPendientes = valores[6] as List<ControlComidaEntity>,
         )
     }
 
@@ -169,6 +195,22 @@ class HoyViewModel(
             diario = base.diario,
             deposiciones = base.deposiciones,
             senales = avisos,
+            controlesPendientes = base.controlesPendientes
+                .map { control ->
+                    ControlPendiente(
+                        id = control.id,
+                        comidaId = control.comidaId,
+                        horaComida = control.horaComida,
+                        alimentos = base.comidas
+                            .firstOrNull { it.id == control.comidaId }
+                            ?.alimentos,
+                        programadoPara = control.programadoPara,
+                    )
+                }
+                // Solo los que ya ha pasado la ventana de utilidad: antes
+                // de las dos horas la pregunta sería absurda, y después la
+                // respuesta ya no sería de fiar.
+                .filter { ControlComida.tocaPreguntar(it.horaComida, LocalTime.now()) },
         )
     }.stateIn(
         scope = viewModelScope,
@@ -269,6 +311,25 @@ class HoyViewModel(
                 fecha,
             ) > 0,
         )
+    }
+
+    /**
+     * Responde a la pregunta de control de una comida.
+     *
+     * Con «no» se cierra y no se vuelve a preguntar: insistir con quien ya
+     * ha contestado convierte la app en un martillo, y la respuesta ya
+     * está guardada. Con «sí» se cierra igualmente y lo que se apunta son
+     * los síntomas que el paciente marque a continuación, que es lo que la
+     * app sabe recording.
+     */
+    fun responderControl(control: ControlPendiente, huboCambios: Boolean) {
+        viewModelScope.launch {
+            repositorio.responderControl(control.id, huboCambios)
+            PlanificadorControlComida.cancelar(contexto, control.id)
+            // Un control cerrado puede disparar señales nuevas: el paciente
+            // ha dicho que ha notado algo y eso puede ser un brote.
+            recalcularSenales()
+        }
     }
 
     fun marcarTomada(toma: TomaConDetalle) {

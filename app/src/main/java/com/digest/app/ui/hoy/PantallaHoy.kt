@@ -105,6 +105,7 @@ fun PantallaHoy(modifier: Modifier = Modifier) {
             alMarcarOmitida = viewModel::marcarOmitida,
             alReponer = viewModel::volverAPendiente,
             alAlternarSintoma = viewModel::alternarSintoma,
+            alResponderControl = viewModel::responderControl,
         )
     }
 
@@ -152,6 +153,7 @@ private fun ContenidoHoy(
     alMarcarOmitida: (TomaConDetalle) -> Unit,
     alReponer: (TomaConDetalle) -> Unit,
     alAlternarSintoma: (TipoSintoma) -> Unit,
+    alResponderControl: (ControlPendiente, Boolean) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -245,6 +247,16 @@ private fun ContenidoHoy(
         item {
             HorizontalDivider(Modifier.padding(vertical = 4.dp))
             Seccion(stringResource(R.string.hoy_sintomas))
+        }
+
+        // El control va justo encima de los síntomas: si el paciente dice
+        // que ha notado algo, lo siguiente que tiene que hacer es marcarlos,
+        // y no conviene que tenga que buscar dónde.
+        item {
+            TarjetaControlComida(
+                controles = estado.controlesPendientes,
+                alResponder = alResponderControl,
+            )
         }
 
         item {

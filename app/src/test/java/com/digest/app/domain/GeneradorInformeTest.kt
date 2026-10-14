@@ -44,6 +44,7 @@ class GeneradorInformeTest {
         deposiciones: List<DeposicionEntity> = emptyList(),
         dolores: List<com.digest.app.data.local.entity.DolorEntity> = emptyList(),
         nutricion: List<com.digest.app.data.local.entity.NutricionEnteralEntity> = emptyList(),
+        comidasControladas: List<ComidaControlada> = emptyList(),
         sintomas: Map<LocalDate, List<SintomaDia>> = emptyMap(),
         diario: Map<LocalDate, DiarioEntity> = emptyMap(),
         pesajes: List<PesajeEntity> = emptyList(),
@@ -56,6 +57,7 @@ class GeneradorInformeTest {
         deposiciones = deposiciones,
         dolores = dolores,
         nutricion = nutricion,
+        comidasControladas = comidasControladas,
         sintomas = sintomas,
         comidas = emptyMap(),
         diario = diario,
@@ -431,4 +433,52 @@ class GeneradorInformeTest {
         volumenMl = volumenMl,
         tipo = com.digest.app.model.TipoNutricionEnteral.PARCIAL,
     )
+
+    @Test
+    fun `el informe separa las comidas que provocaron cambios de las que no`() {
+        val texto = GeneradorInforme.texto(
+            informe(
+                comidasControladas = listOf(
+                    ComidaControlada(hoy, LocalTime.of(14, 0), "Almuerzo", "Pollo con arroz", true),
+                    ComidaControlada(hoy, LocalTime.of(21, 0), "Cena", "Pizza", true),
+                    ComidaControlada(
+                        hoy,
+                        LocalTime.of(8, 0),
+                        "Desayuno",
+                        "Tostada con tomate",
+                        false,
+                    ),
+                    ComidaControlada(hoy, LocalTime.of(11, 0), "Media mañana", null, null),
+                ),
+            ),
+        )
+
+        assertTrue(texto.contains("COMIDAS Y REACCIÓN"))
+        assertTrue(texto.contains("Con cambios después:"))
+        assertTrue(texto.contains("Pollo con arroz"))
+        assertTrue(texto.contains("Pizza"))
+        // Las que se toleraron bien también se listan: saber qué no ha
+        // dado problemas vale tanto como saber qué sí.
+        assertTrue(texto.contains("Se toleraron bien: 1"))
+        assertTrue(texto.contains("Tostada con tomate"))
+        assertTrue(texto.contains("Sin control pendiente: 1"))
+    }
+
+    @Test
+    fun `sin comidas controladas no aparece la seccion`() {
+        val texto = GeneradorInforme.texto(informe())
+
+        assertFalse(texto.contains("COMIDAS Y REACCIÓN"))
+    }
+
+    @Test
+    fun `el informe no deja lineas en blanco sueltas`() {
+        // Secciones que no aplican: sin enteral ni pesajes no deben dejar
+        // huecos donde habrían ido.
+        val texto = GeneradorInforme.texto(informe())
+
+        assertFalse(
+            texto.contains("\n\n\n"),
+        )
+    }
 }

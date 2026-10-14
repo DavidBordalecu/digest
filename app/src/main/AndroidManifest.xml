@@ -44,6 +44,16 @@
             android:name=".notificaciones.ReceptorAccionToma"
             android:exported="false" />
 
+        <!-- Publica la pregunta de control posterior a la comida. -->
+        <receiver
+            android:name=".notificaciones.ReceptorAvisoComida"
+            android:exported="false" />
+
+        <!-- Respuesta «No he notado nada» sobre la notificación. -->
+        <receiver
+            android:name=".notificaciones.ReceptorAccionComida"
+            android:exported="false" />
+
         <!-- Reprograma los avisos tras reiniciar o actualizar la app. -->
         <receiver
             android:name=".notificaciones.ReceptorReinicio"

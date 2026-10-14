@@ -35,7 +35,15 @@ import com.digest.app.ui.secciones.PantallaComidas
  * Decide entre el alta inicial y la app en sí según exista o no el perfil.
  */
 @Composable
-fun App(modifier: Modifier = Modifier) {
+fun App(
+    modifier: Modifier = Modifier,
+    /**
+     * Cuántas veces se ha abierto la app desde el aviso de un control de
+     * comida. Al cambiar, se salta a la pestaña de hoy para que el paciente
+     * pueda marcar lo que ha notado, que es para lo que se le ha preguntado.
+     */
+    controlAbierto: Int = 0,
+) {
     val contexto = LocalContext.current
     val viewModel: AppViewModel = viewModel(factory = AppViewModel.fabrica)
     val estado by viewModel.estado.collectAsStateWithLifecycle()
@@ -43,6 +51,12 @@ fun App(modifier: Modifier = Modifier) {
     // Preparar el día: crear las tomas pendientes y programar sus avisos.
     LaunchedEffect(estado.perfilConfigurado) {
         if (estado.perfilConfigurado) viewModel.prepararHoy()
+    }
+
+    // Aviso de control de comida pulsado: a la pestaña de hoy, que es donde
+    // se marcan los síntomas que ha notado.
+    LaunchedEffect(controlAbierto) {
+        if (controlAbierto > 0) viewModel.irA(Seccion.HOY)
     }
 
     when {

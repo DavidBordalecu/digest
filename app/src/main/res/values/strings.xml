@@ -139,6 +139,21 @@
     <string name="comida_hora">Hora: %1$s</string>
     <string name="comida_hora_ahora">Ahora</string>
 
+    <!-- Control posterior a la comida -->
+    <string name="canal_control_comida">Control después de comer</string>
+    <string name="canal_control_comida_desc">Te pregunta si has notado algún cambio tras una comida</string>
+    <string name="control_comida_titulo">¿Cómo llevas la comida?</string>
+    <string name="control_comida">¿Has notado algún cambio desde que comiste?</string>
+    <string name="control_comida_con_comida">¿Has notado algún cambio desde que comiste %1$s?</string>
+    <string name="accion_sin_cambios">No, nada</string>
+    <string name="control_tarjeta_titulo">Control de la comida</string>
+    <string name="control_tarjeta_pregunta">Han pasado 2 horas desde que comiste. ¿Has notado algún cambio?</string>
+    <string name="control_si">Sí, he notado cambios</string>
+    <string name="control_no">No, nada nuevo</string>
+    <string name="control_pendientes">Pendientes de responder</string>
+    <string name="control_hora_comida">Comida de las %1$s</string>
+    <string name="control_registrado">Comidas controladas hoy: %1$d de %2$d con cambios</string>
+
     <string name="enteral_exclusiva">Nutrición enteral exclusiva</string>
     <string name="enteral_parcial">Nutrición enteral parcial</string>
     <string name="enteral_suplemento">Fórmula como suplemento</string>

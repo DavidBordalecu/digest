@@ -1,6 +1,7 @@
 package com.digest.app.ui.secciones
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import com.digest.app.data.DigestRepository
 import com.digest.app.data.local.entity.ComidaEntity
 import com.digest.app.data.local.entity.PerfilEntity
 import com.digest.app.model.TipoComida
+import com.digest.app.notificaciones.PlanificadorControlComida
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +31,10 @@ data class EstadoComidas(
     val alimentosRecientes: List<String> = emptyList(),
 )
 
-class ComidasViewModel(private val repositorio: DigestRepository) : ViewModel() {
+class ComidasViewModel(
+    private val repositorio: DigestRepository,
+    private val contexto: Context,
+) : ViewModel() {
 
     private val fecha: LocalDate = LocalDate.now()
 
@@ -76,7 +81,7 @@ class ComidasViewModel(private val repositorio: DigestRepository) : ViewModel() 
 
     fun guardarComida(tipo: TipoComida, alimentos: String?, hora: LocalTime) {
         viewModelScope.launch {
-            repositorio.guardarComida(
+            val id = repositorio.guardarComida(
                 ComidaEntity(
                     fecha = fecha,
                     hora = hora,
@@ -84,6 +89,18 @@ class ComidasViewModel(private val repositorio: DigestRepository) : ViewModel() 
                     alimentos = alimentos,
                 ),
             )
+
+            // Al guardar la comida se programa la pregunta de las dos horas.
+            // Va fuera del diálogo a propósito: el paciente ya ha answered
+            // lo que tenía que responder y la app puede estar en segundo
+            // plano, así que no se depende de que siga abierta.
+            PlanificadorControlComida.registrarYProgramar(
+                context = contexto,
+                comidaId = id,
+                fecha = fecha,
+                horaComida = hora,
+            )
+
             // Lo recién anotado pasa a estar disponible como sugerencia,
             // por si a la hora siguiente vuelve a comerse lo mismo.
             if (alimentos != null) {
@@ -103,7 +120,7 @@ class ComidasViewModel(private val repositorio: DigestRepository) : ViewModel() 
             initializer {
                 val aplicacion = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
                     as DigestApplication
-                ComidasViewModel(aplicacion.repositorio)
+                ComidasViewModel(aplicacion.repositorio, aplicacion)
             }
         }
     }

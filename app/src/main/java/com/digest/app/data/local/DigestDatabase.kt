@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.TypeConverters
 import com.digest.app.data.local.entity.CirugiaEntity
 import com.digest.app.data.local.entity.ComidaEntity
+import com.digest.app.data.local.entity.ControlComidaEntity
 import com.digest.app.data.local.entity.DeposicionEntity
 import com.digest.app.data.local.entity.DiarioEntity
 import com.digest.app.data.local.entity.DolorEntity
@@ -43,8 +44,9 @@ import com.digest.app.data.local.entity.TomaEntity
         PesajeEntity::class,
         NutricionEnteralEntity::class,
         ManifestacionPerianalEntity::class,
+        ControlComidaEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -63,6 +65,7 @@ abstract class DigestDatabase : RoomDatabase() {
     abstract fun pesajeDao(): PesajeDao
     abstract fun nutricionEnteralDao(): NutricionEnteralDao
     abstract fun manifestacionPerianalDao(): ManifestacionPerianalDao
+    abstract fun controlComidaDao(): ControlComidaDao
 
     companion object {
         private const val NOMBRE = "digest.db"
@@ -80,7 +83,7 @@ abstract class DigestDatabase : RoomDatabase() {
                 // WAL permite leer mientras se escribe: el registro de una toma
                 // desde el aviso no se solapa con la lectura de la pantalla de hoy.
                 .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)
-                .addMigrations(MIGRACION_1_2)
+                .addMigrations(MIGRACION_1_2, MIGRACION_2_3)
                 .build()
 
         /**
@@ -97,6 +100,34 @@ abstract class DigestDatabase : RoomDatabase() {
                 )
                 db.execSQL(
                     "ALTER TABLE perfil ADD COLUMN intervaloConsultaMeses INTEGER NOT NULL DEFAULT 6",
+                )
+            }
+        }
+
+        /**
+         * Paso 2 → 3: control de tolerancia de las comidas.
+         *
+         * Se crea vacía y con `huboCambios` a nulo, que significa «sin
+         * responder». No se rellenan controles para las comidas ya
+         * registradas: preguntar ahora por una comida de hace tres días no
+         * tiene sentido y daría datos inventados.
+         */
+        val MIGRACION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS control_comidas (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "comidaId INTEGER NOT NULL, " +
+                        "fecha INTEGER NOT NULL, " +
+                        "horaComida INTEGER NOT NULL, " +
+                        "programadoPara INTEGER NOT NULL, " +
+                        "respondidoEn INTEGER, " +
+                        "huboCambios INTEGER, " +
+                        "registradoEn INTEGER NOT NULL)",
+                )
+                db.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS index_control_comidas_comidaId " +
+                        "ON control_comidas (comidaId)",
                 )
             }
         }
