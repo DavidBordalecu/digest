@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digest · Diario de medicación, comidas y síntomas para la EII</title>
+<meta name="description" content="Digest es una app Android para personas con enfermedad inflamativa intestinal o colon irritable: medicación, comidas, síntomas e informe para el médico. Todo local, sin cuentas. Prueba la demo interactiva.">
+<meta name="theme-color" content="#04191b">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<!-- ===================== Barra de progreso y navegación ===================== -->
+<div class="progreso-scroll" id="barraProgreso"><span></span></div>
+
+<header class="nav" id="nav">
+  <a class="nav__marca" href="#inicio" aria-label="Digest, inicio">
+    <span class="nav__logo">
+      <svg viewBox="0 0 512 512" aria-hidden="true">
+        <defs>
+          <linearGradient id="gLogo" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#12949B"/><stop offset="55%" stop-color="#00696E"/><stop offset="100%" stop-color="#32474E"/>
+          </linearGradient>
+        </defs>
+        <rect width="512" height="512" rx="110" fill="url(#gLogo)"/>
+        <path d="M176,356 C160,316 154,246 156,192 C157,166 180,152 206,152 L318,152 C344,152 367,166 368,192 C370,250 366,298 362,328 C356,366 318,380 290,358 C268,340 272,310 296,302"
+          fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="nav__texto">
+      <strong>Digest</strong>
+      <small>v1.7</small>
+    </span>
+  </a>
+
+  <nav class="nav__enlaces" id="navEnlaces" aria-label="Secciones">
+    <a href="#principios">Principios</a>
+    <a href="#demo">Demo</a>
+    <a href="#funciones">Funciones</a>
+    <a href="#diagnosticos">Diagnósticos</a>
+    <a href="#alertas">Alertas</a>
+    <a href="#informe">Informe</a>
+    <a href="#tecnica">Técnica</a>
+    <a href="#glosario">Glosario</a>
+  </nav>
+
+  <div class="nav__acciones">
+    <button class="icono-btn" id="btnTema" aria-label="Cambiar tema" title="Cambiar tema">
+      <svg class="ico-claro" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+      <svg class="ico-oscuro" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+    </button>
+    <a class="btn btn--primario btn--sm" href="#demo">Probar la demo</a>
+    <button class="icono-btn nav__menu" id="btnMenu" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<!-- ===================== Hero ===================== -->
+<section class="hero" id="inicio">
+  <div class="hero__fondo" aria-hidden="true">
+    <span class="orbo orbo--1" data-parallax="0.25"></span>
+    <span class="orbo orbo--2" data-parallax="0.45"></span>
+    <span class="orbo orbo--3" data-parallax="0.15"></span>
+    <span class="hero__rejilla"></span>
+    <svg class="hero__trazo" viewBox="0 0 512 512" aria-hidden="true">
+      <path d="M176,356 C160,316 154,246 156,192 C157,166 180,152 206,152 L318,152 C344,152 367,166 368,192 C370,250 366,298 362,328 C356,366 318,380 290,358 C268,340 272,310 296,302"
+        fill="none" stroke="rgba(156,241,246,.5)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="hero__contenido contenedor">
+    <span class="chipsuperior reveal">Android 8.0+ · APK de 1,8 MB · Sin cuentas ni servidores</span>
+    <h1 class="hero__titulo reveal">Digest</h1>
+    <p class="hero__claim reveal">Tu diario de <em>medicación</em>, <em>comidas</em> y <em>síntomas</em> para la enfermedad inflamatoria intestinal o el colon irritable.</p>
+    <p class="hero__lead reveal">Registra un día normal en menos de un minuto y lleva al médico un informe que responde a la pregunta de siempre: <strong>¿qué ha pasado desde la última consulta?</strong></p>
+
+    <div class="hero__cta reveal">
+      <a class="btn btn--primario btn--grande magnetico" href="#demo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+        Probar la demo en el móvil
+      </a>
+      <a class="btn btn--fantasma btn--grande magnetico" href="#funciones">Ver qué hace</a>
+    </div>
+
+    <dl class="hero__cifras reveal">
+      <div><dt data-contador="4">0</dt><dd>diagnósticos soportados</dd></div>
+      <div><dt data-contador="15">0</dt><dd>tablas, todo en el teléfono</dd></div>
+      <div><dt data-contador="9">0</dt><dd>reglas de alerta clínica</dd></div>
+      <div><dt data-contador="0">0</dt><dd>servidores a los que se envía nada</dd></div>
+    </dl>
+  </div>
+
+  <a class="hero__bajada" href="#principios" aria-label="Seguir leyendo">
+    <span></span>
+  </a>
+</section>
+
+<!-- ===================== Principios ===================== -->
+<section class="seccion" id="principios">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">1 · Qué es</span>
+      <h2>No diagnostica. Resuelve un problema concreto.</h2>
+      <p>Digest no decide tratamientos ni sustituye al médico. Su trabajo es que el paciente recuerde y pueda contar con precisión lo que ha pasado entre una consulta y la siguiente.</p>
+    </header>
+
+    <div class="rejilla rejilla--5">
+      <article class="principio reveal" data-tilt>
+        <div class="principio__ico">
+          <svg viewBox="0 0 24 24"><path d="M12 3 4 6.5v5c0 4.6 3.2 8.4 8 9.5 4.8-1.1 8-4.9 8-9.5v-5L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <h3>Todo local</h3>
+        <p>Los datos de salud se guardan solo en el teléfono. No hay servidor, no hay cuenta y la app funciona sin conexión.</p>
+      </article>
+
+      <article class="principio reveal" data-tilt>
+        <div class="principio__ico">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="16" r="3"/></svg>
+        </div>
+        <h3>La enfermedad es un dato</h3>
+        <p>El diagnóstico elegido decide qué zonas se preguntan, qué síntomas se ofrecen y cómo se nombra el control diario.</p>
+      </article>
+
+      <article class="principio reveal" data-tilt>
+        <div class="principio__ico">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        </div>
+        <h3>Registrar rápido</h3>
+        <p>Cuestionarios con lo mínimo accionable y comidas anteriores que se repiten con un toque, porque los días se repiten.</p>
+      </article>
+
+      <article class="principio reveal" data-tilt>
+        <div class="principio__ico">
+          <svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        </div>
+        <h3>Avisar sin prometer milagros</h3>
+        <p>Sin permiso de alarma exacta, la app degrada a alarma inexacta en lugar de dejar de avisar.</p>
+      </article>
+
+      <article class="principio reveal" data-tilt>
+        <div class="principio__ico">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.5"/></svg>
+        </div>
+        <h3>Explicar las alertas</h3>
+        <p>Cada señal clínica dice qué ha detectado y por qué conviene consultar. Una alerta sin motivo se acaba ignorando.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Demo ===================== -->
+<section class="seccion seccion--demo" id="demo">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">2 · Demo interactiva</span>
+      <h2>Usa Digest aquí mismo, dentro de un móvil.</h2>
+      <p>Es la app completa a modo de prueba: alta, tomas, comidas, síntomas, diario, documentos e informe. Todo responde de verdad y se guarda en tu navegador; nada sale de tu equipo.</p>
+    </header>
+
+    <div class="demo__rejilla">
+
+      <!-- Panel de control -->
+      <aside class="demo__panel reveal">
+        <div class="demo__panelcab">
+          <span class="punto punto--verde"></span>
+          <h3>Simulador</h3>
+        </div>
+
+        <div class="demo__bloque">
+          <label class="demo__label">Diagnóstico del perfil</label>
+          <div class="chipsel" id="chipsDiagnostico" role="tablist">
+            <button data-condicion="colitis_ulcerosa" class="activo">Colitis ulcerosa</button>
+            <button data-condicion="crohn">Crohn</button>
+            <button data-condicion="indeterminada">Indeterminada</button>
+            <button data-condicion="colon_irritable">Colon irritable</button>
+          </div>
+          <p class="demo__nota" id="notaDiagnostico">La colitis ulcerosa afecta al colon y al recto: preguntas por sangre, tenesmo y estado del brote.</p>
+        </div>
+
+        <div class="demo__bloque">
+          <label class="demo__label">Guía rápida</label>
+          <ol class="demo__pasos" id="listaPasos">
+            <li data-paso="alta"><span class="num">1</span> Completa el alta y pulsa <strong>Empezar</strong>.</li>
+            <li data-paso="toma"><span class="num">2</span> Marca una toma como <strong>Tomada</strong> u <strong>Omitir</strong>.</li>
+            <li data-paso="sintoma"><span class="num">3</span> Toca un síntoma: sube de intensidad y, en el máximo, se quita.</li>
+            <li data-paso="comida"><span class="num">4</span> Registra una comida y responde su control 2 horas después.</li>
+            <li data-paso="cuerpo"><span class="num">5</span> En <strong>Diario</strong>, apunta una deposición con escala de Bristol.</li>
+            <li data-paso="informe"><span class="num">6</span> Genera el informe de 7, 15 o 30 días.</li>
+          </ol>
+        </div>
+
+        <div class="demo__bloque demo__bloque--acciones">
+          <button class="btn btn--tonal btn--sm" id="btnSemilla">Cargar 7 días de datos de ejemplo</button>
+          <button class="btn btn--tonal btn--sm" id="btnAviso">Simular aviso de toma</button>
+          <button class="btn btn--peligro btn--sm" id="btnReiniciar">Reiniciar la demo</button>
+        </div>
+
+        <p class="demo__pie">Los datos viven en <code>localStorage</code>. Reiniciar borra todo lo registrado en la demo.</p>
+      </aside>
+
+      <!-- Teléfono -->
+      <div class="movilzona reveal">
+        <div class="movilzona__brillo" aria-hidden="true"></div>
+
+        <div class="movil" id="movil">
+          <div class="movil__boton movil__boton--on" aria-hidden="true"></div>
+          <div class="movil__boton movil__boton--vol" aria-hidden="true"></div>
+          <div class="movil__boton movil__boton--vol movil__boton--abajo" aria-hidden="true"></div>
+
+          <div class="movil__pantalla">
+            <!-- Barra de estado -->
+            <div class="movil__estado">
+              <span class="movil__hora" id="movilHora">9:41</span>
+              <span class="movil__muesca"></span>
+              <span class="movil__iconos">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17h2v3H3zM8 13h2v7H8zM13 9h2v11h-2zM18 5h2v15h-2z"/></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM7.8 14.3a6 6 0 0 1 8.4 0M4.6 11a10.5 10.5 0 0 1 14.8 0"/></svg>
+                <svg viewBox="0 0 26 24" aria-hidden="true"><rect x="2" y="7" width="18" height="10" rx="2.5"/><rect x="4" y="9" width="13" height="6" rx="1" class="relleno"/><path d="M22 10.5v3"/></svg>
+              </span>
+            </div>
+
+            <!-- Notificación simulada -->
+            <div class="movil__aviso" id="movilAviso" role="alert" aria-live="polite">
+              <div class="aviso__cab">
+                <span class="aviso__app">
+                  <svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="#00696E"/><path d="M176,356 C160,316 154,246 156,192 C157,166 180,152 206,152 L318,152 C344,152 367,166 368,192 C370,250 366,298 362,328 C356,366 318,380 290,358 C268,340 272,310 296,302" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Digest · ahora
+                </span>
+                <button class="aviso__cerrar" id="avisoCerrar" aria-label="Cerrar aviso">✕</button>
+              </div>
+              <strong id="avisoTitulo">Toma de Mesalazina</strong>
+              <p id="avisoCuerpo">Te toca tomarlo a las 08:00</p>
+              <div class="aviso__acciones">
+                <button data-aviso="tomada">Tomada</button>
+                <button data-aviso="omitida">Omitir</button>
+              </div>
+            </div>
+
+            <!-- Contenido de la app -->
+            <div class="movil__app" id="appScreen"><!-- render JS --></div>
+
+            <!-- Barra inferior -->
+            <nav class="movil__nav" id="appNav" aria-label="Navegación de la demo">
+              <button data-seccion="hoy" class="activo">
+                <svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V19h11v-8.5"/><path d="M10 19v-4.5h4V19"/></svg>
+                <span>Hoy</span>
+              </button>
+              <button data-seccion="medicacion">
+                <svg viewBox="0 0 24 24"><rect x="3.2" y="9" width="17.6" height="7" rx="3.5" transform="rotate(-35 12 12)"/><path d="M9.4 8.2 15.8 14.6"/></svg>
+                <span>Medicación</span>
+              </button>
+              <button data-seccion="comidas">
+                <svg viewBox="0 0 24 24"><path d="M6 3v7a2 2 0 0 0 4 0V3M8 10v11"/><path d="M17 3c-1.6 1-2.5 3-2.5 5.5S15.4 13 17 13.5V21"/></svg>
+                <span>Comidas</span>
+              </button>
+              <button data-seccion="diario">
+                <svg viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4Z"/><path d="M6 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2"/><path d="M9.5 8.5h6M9.5 12h6"/></svg>
+                <span>Diario</span>
+              </button>
+              <button data-seccion="perfil">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>
+                <span>Perfil</span>
+              </button>
+            </nav>
+
+            <!-- SnackBar -->
+            <div class="movil__snack" id="movilSnack" role="status" aria-live="polite"></div>
+
+            <!-- Hoja inferior / diálogos -->
+            <div class="movil__capa" id="movilCapa" hidden>
+              <div class="movil__hoja" id="movilHoja" role="dialog" aria-modal="true"></div>
+            </div>
+
+            <!-- Anillo de toque -->
+            <span class="movil__touch" id="movilTouch" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <p class="movilzona__pie"><span class="punto punto--verde"></span> Demo funcional · toca dentro del móvil</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Funciones ===================== -->
+<section class="seccion" id="funciones">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">3 · Pantallas</span>
+      <h2>Cinco pantallas, un solo sitio para todo el día.</h2>
+      <p>Elige una pestaña y mira qué hace cada pantalla. Es el mismo orden en el que las usarás dentro de la demo.</p>
+    </header>
+
+    <div class="funciones">
+      <div class="funciones__tabs" id="funcionesTabs" role="tablist">
+        <button class="activo" data-funcion="hoy" role="tab"><span>01</span> Hoy</button>
+        <button data-funcion="medicacion" role="tab"><span>02</span> Medicación</button>
+        <button data-funcion="comidas" role="tab"><span>03</span> Comidas</button>
+        <button data-funcion="diario" role="tab"><span>04</span> Diario</button>
+        <button data-funcion="perfil" role="tab"><span>05</span> Perfil y documentos</button>
+      </div>
+
+      <div class="funciones__panel" id="funcionesPanel"><!-- render JS --></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Diagnósticos ===================== -->
+<section class="seccion seccion--suave" id="diagnosticos">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">4 · Para quién es</span>
+      <h2>Cuatro diagnósticos, cuatro apps distintas dentro de la misma.</h2>
+      <p>La condición elegida en el alta decide las zonas que se preguntan, el cuestionario de síntomas y el nombre del control diario. Toca una columna para verla en detalle.</p>
+    </header>
+
+    <div class="diags" id="diags">
+      <div class="diags__sel reveal" id="diagsSel">
+        <button class="activo" data-diag="colitis_ulcerosa">Colitis ulcerosa</button>
+        <button data-diag="crohn">Enfermedad de Crohn</button>
+        <button data-diag="indeterminada">Colitis indeterminada</button>
+        <button data-diag="colon_irritable">Colon irritable</button>
+      </div>
+
+      <div class="diags__tabla reveal">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Característica</th>
+              <th scope="col" data-col="colitis_ulcerosa">Colitis ulcerosa</th>
+              <th scope="col" data-col="crohn">Crohn</th>
+              <th scope="col" data-col="indeterminada">Indeterminada</th>
+              <th scope="col" data-col="colon_irritable">Colon irritable</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Tipo</th><td data-col="colitis_ulcerosa">Inflamatoria</td><td data-col="crohn">Inflamatoria</td><td data-col="indeterminada">Inflamatoria</td><td data-col="colon_irritable">No inflamatoria</td></tr>
+            <tr><th scope="row">Localización</th><td data-col="colitis_ulcerosa">Colon y recto</td><td data-col="crohn">Cualquier parte del tubo digestivo</td><td data-col="indeterminada">No está claro si es colitis o Crohn</td><td data-col="colon_irritable">Intestino, sin inflamación</td></tr>
+            <tr><th scope="row">Zonas en el alta</th><td data-col="colitis_ulcerosa">Proctitis, colitis izquierda, extensa, pancolitis</td><td data-col="crohn">Íleítis, íleo-colitis, colitis de Crohn, gastroduodenal, perianal</td><td data-col="indeterminada">Todas las anteriores</td><td data-col="colon_irritable">No se preguntan</td></tr>
+            <tr><th scope="row">Síntomas perianales</th><td data-col="colitis_ulcerosa">No</td><td data-col="crohn">Sí</td><td data-col="indeterminada">Sí</td><td data-col="colon_irritable">No</td></tr>
+            <tr><th scope="row">Sangre, fiebre y pérdida de peso</th><td data-col="colitis_ulcerosa">Sí</td><td data-col="crohn">Sí</td><td data-col="indeterminada">Sí</td><td data-col="colon_irritable">No</td></tr>
+            <tr><th scope="row">Bloque de control</th><td data-col="colitis_ulcerosa">Estado del brote</td><td data-col="crohn">Estado del brote</td><td data-col="indeterminada">Estado del brote</td><td data-col="colon_irritable">Control de los síntomas</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="diags__detalle reveal" id="diagsDetalle"><!-- render JS --></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Alertas ===================== -->
+<section class="seccion" id="alertas">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">5 · Señales clínicas</span>
+      <h2>Nueve reglas que avisan sin diagnosticar.</h2>
+      <p>Tres niveles y siempre el porqué escrito. Pulsa una regla para ver cuándo salta y qué le dice al paciente.</p>
+    </header>
+
+    <div class="niveles reveal">
+      <div class="nivel nivel--normal"><strong>Normal</strong><span>No hace falta adelantar la consulta.</span></div>
+      <div class="nivel nivel--pronto"><strong>Pronto</strong><span>Conviene pedir cita en los próximos días.</span></div>
+      <div class="nivel nivel--urgente"><strong>Urgente</strong><span>Contactar hoy con el centro de salud.</span></div>
+    </div>
+
+    <div class="reglas" id="reglas"><!-- render JS --></div>
+
+    <div class="alertavivo reveal">
+      <div>
+        <h3>Míralas funcionando en la demo</h3>
+        <p>Las señales se recalculan con lo que registras en el móvil: marca una deposición con sangre abundante, sube la fiebre a 4 o apunta 8 deposiciones diarreicas y verás saltar el aviso urgente con su motivo.</p>
+        <button class="btn btn--tonal" id="btnSenalesDemo">Ver señales de mi demo</button>
+      </div>
+      <div class="alertavivo__tarjeta" id="tarjetaSenalesDemo">
+        <span class="punto punto--apagado"></span>
+        <p>Sin datos todavía. Carga la demo o pulsa «Ver señales de mi demo».</p>
+      </div>
+    </div>
+
+    <p class="descargo reveal">Digest no diagnostica. Estas señales apuntan situaciones que no deberían esperar: ante una urgencia, acude a un servicio médico.</p>
+  </div>
+</section>
+
+<!-- ===================== Informe ===================== -->
+<section class="seccion seccion--suave" id="informe">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">6 · Informe para el médico</span>
+      <h2>De las anotaciones del paciente a un texto que se puede leer en consulta.</h2>
+      <p>Dos formatos y tres periodos. El informe sale del teléfono solo si el paciente decide compartirlo.</p>
+    </header>
+
+    <div class="informe reveal">
+      <div class="informe__controles">
+        <div class="segrup">
+          <span class="demo__label">Formato</span>
+          <div class="segsel" id="informeFormato">
+            <button class="activo" data-formato="texto">Texto</button>
+            <button data-formato="csv">CSV</button>
+          </div>
+        </div>
+        <div class="segrup">
+          <span class="demo__label">Periodo</span>
+          <div class="segsel" id="informePeriodo">
+            <button class="activo" data-dias="7">7 días</button>
+            <button data-dias="15">15 días</button>
+            <button data-dias="30">30 días</button>
+          </div>
+        </div>
+        <div class="segrup segrup--fin">
+          <button class="btn btn--primario" id="btnGenerarInforme">Generar con mi demo</button>
+        </div>
+      </div>
+
+      <pre class="informe__salida" id="informeSalida">Pulsa «Generar con mi demo» y aquí saldrá el resumen exacto que vería el médico.
+
+Si la demo está vacía, se usa un conjunto de datos de muestra con diagnóstico de colitis ulcerosa.</pre>
+
+      <div class="informe__acciones">
+        <button class="btn btn--fantasma btn--sm" id="btnCopiarInforme">Copiar</button>
+        <button class="btn btn--fantasma btn--sm" id="btnDescargarInforme">Descargar</button>
+        <span class="informe__nota">El informe termina siempre con el aviso de que lo genera el paciente y no es una valoración médica.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Privacidad ===================== -->
+<section class="seccion" id="privacidad">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">7 · Privacidad</span>
+      <h2>Si no sale del móvil, no hay filtración que valga.</h2>
+    </header>
+
+    <div class="rejilla rejilla--3">
+      <article class="tarjeta reveal" data-tilt>
+        <h3>Guardado en el dispositivo</h3>
+        <p>Base de datos privada de la app, en el propio teléfono. Sin servidor, sin cuenta y sin sincronización en la nube.</p>
+      </article>
+      <article class="tarjeta reveal" data-tilt>
+        <h3>Funciona sin conexión</h3>
+        <p>Registrar una toma o una deposición no requiere internet. Importa cuando el paciente está malo o en hospital.</p>
+      </article>
+      <article class="tarjeta reveal" data-tilt>
+        <h3>Tú decides a quién se lo mandas</h3>
+        <p>Los informes solo salen del teléfono cuando el paciente pulsa compartir. No hay telemetría de ningún tipo.</p>
+      </article>
+      <article class="tarjeta tarjeta--aviso reveal" data-tilt>
+        <h3>Todavía no hay copia de seguridad</h3>
+        <p>Si se desinstala la app o se cambia de móvil, los datos se pierden. Es la principal limitación pendiente del proyecto.</p>
+      </article>
+      <article class="tarjeta tarjeta--aviso reveal" data-tilt>
+        <h3>Los avisos dependen de Android</h3>
+        <p>Con permisos denegados, ahorro extremo de batería o alarmas restringidas por el fabricante, un aviso puede retrasarse.</p>
+      </article>
+      <article class="tarjeta tarjeta--aviso reveal" data-tilt>
+        <h3>No es un dispositivo médico</h3>
+        <p>No diagnostica, no ajusta tratamientos y no interpreta los datos. El informe es un resumen de lo anotado, no una historia clínica.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Ficha técnica ===================== -->
+<section class="seccion seccion--suave" id="tecnica">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">8 · Ficha técnica</span>
+      <h2>Pequeña, en Kotlin y sin sorpresas.</h2>
+    </header>
+
+    <div class="tecnica">
+      <dl class="tecnica__datos reveal">
+        <div><dt>Nombre</dt><dd>Digest</dd></div>
+        <div><dt>Paquete</dt><dd><code>com.digest.app</code></dd></div>
+        <div><dt>Versión</dt><dd>1.7 <span class="tag">versionCode 7</span></dd></div>
+        <div><dt>Plataforma</dt><dd>Android 8.0 o superior <span class="tag">minSdk 26</span></dd></div>
+        <div><dt>SDK comp./objetivo</dt><dd>36</dd></div>
+        <div><dt>Lenguaje</dt><dd>Kotlin 2.3.20</dd></div>
+        <div><dt>Interfaz</dt><dd>Jetpack Compose + Material 3</dd></div>
+        <div><dt>Arquitectura</dt><dd>MVVM con <code>StateFlow</code></dd></div>
+        <div><dt>Persistencia</dt><dd>Room 2.8.5 · 15 tablas · BD v4</dd></div>
+        <div><dt>Avisos</dt><dd><code>AlarmManager</code> + <code>NotificationManager</code></dd></div>
+        <div><dt>Inyección</dt><dd>Manual, sin Hilt</dd></div>
+        <div><dt>Compilación</dt><dd>AGP 9.0.1</dd></div>
+        <div><dt>Tamaño APK</dt><dd><strong>1,8 MB</strong></dd></div>
+        <div><dt>Firma</dt><dd><code>CN=Digest, OU=Salud Digestiva, O=Digest, L=Madrid, C=ES</code></dd></div>
+      </dl>
+
+      <div class="tecnica__hash reveal">
+        <span class="demo__label">SHA-256 del APK 1.7</span>
+        <code id="hashSha">46066b32485859e40ea10dbb652d3d7d18b2a4036f880e973cca8f063849636c</code>
+        <button class="btn btn--fantasma btn--sm" id="btnCopiarHash">Copiar hash</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Instalación ===================== -->
+<section class="seccion" id="instalacion">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">9 · Instalación</span>
+      <h2>Cuatro pasos, sin Play Store.</h2>
+      <p>El APK está firmado con la misma clave que las versiones anteriores: se puede instalar encima de la 1.6 sin desinstalar y conservando los datos.</p>
+    </header>
+
+    <ol class="pasosinst reveal">
+      <li><span>1</span><div><strong>Pasa el archivo al teléfono</strong><p>Cable, tarjeta SD, Drive o correo.</p></div></li>
+      <li><span>2</span><div><strong>Ábrelo desde el explorador</strong><p>Se instala como cualquier otra app.</p></div></li>
+      <li><span>3</span><div><strong>Permite orígenes desconocidos</strong><p>Android lo pide solo para instalar un APK descargado.</p></div></li>
+      <li><span>4</span><div><strong>Confirma en Play Protect</strong><p>Es habitual en cualquier APK que no venga de la tienda.</p></div></li>
+    </ol>
+
+    <div class="descarga reveal">
+      <div class="descarga__ico">
+        <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg>
+      </div>
+      <div class="descarga__txt">
+        <strong>Digest-v1.7.apk</strong>
+        <span>1,8 MB · Android 8.0+ · español</span>
+      </div>
+      <a class="btn btn--primario" href="Digest-v1.7.apk" download data-apk>Descargar APK</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Novedades ===================== -->
+<section class="seccion seccion--suave" id="novedades">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">10 · Versión 1.7</span>
+      <h2>Qué ha cambiado en la última versión.</h2>
+    </header>
+    <div class="rejilla rejilla--3">
+      <article class="tarjeta reveal"><h3>Colon irritable en el alta</h3><p>Con su propia descripción y sin preguntar zonas afectadas ni antecedentes quirúrgicos, que no forman parte de la enfermedad.</p></article>
+      <article class="tarjeta reveal"><h3>Cuestionario propio</h3><p>Se excluyen los signos de alarma que no pertenecen al cuadro y se mantienen los síntomas habituales.</p></article>
+      <article class="tarjeta reveal"><h3>Control de los síntomas</h3><p>Diario e informe usan «Sin molestias / Leves / Moderadas / Intensas» en lugar de «brote» y «remisión».</p></article>
+      <article class="tarjeta reveal"><h3>Alertas redactadas para SII</h3><p>Cuando la señal implica descartar otra causa, la explicación se adapta al colon irritable.</p></article>
+      <article class="tarjeta reveal"><h3>Corrección de estado</h3><p>Al cambiar de diagnóstico ya no se arrastra la marca de ostomía de una selección anterior.</p></article>
+      <article class="tarjeta reveal"><h3>Informe más completo</h3><p>Las anotaciones que solo contienen estado del brote o hidratación ya no aparecen como «sin anotaciones».</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Glosario ===================== -->
+<section class="seccion" id="glosario">
+  <div class="contenedor">
+    <header class="seccion__cab reveal">
+      <span class="otiqueta">11 · Glosario</span>
+      <h2>Las palabras que aparecen en la app.</h2>
+      <div class="buscador">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+        <input type="search" id="buscadorGlosario" placeholder="Buscar término, por ejemplo «Bristol» o «tenesmo»…" aria-label="Buscar en el glosario">
+      </div>
+    </header>
+
+    <div class="glosario" id="glosarioLista"><!-- render JS --></div>
+    <p class="glosario__vacio" id="glosarioVacio" hidden>Ningún término coincide con la búsqueda.</p>
+  </div>
+</section>
+
+<!-- ===================== Cierre ===================== -->
+<section class="cierre">
+  <div class="contenedor">
+    <div class="cierre__panel reveal">
+      <h2>¿Tienes una EII o colon irritable y llevas la cuenta de todo en papel?</h2>
+      <p>Descarga la app o vuelve a la demo: en dos minutos tienes el alta hecha y el primer día registrado.</p>
+      <div class="hero__cta">
+        <a class="btn btn--primario btn--grande magnetico" href="Digest-v1.7.apk" download data-apk>Descargar Digest 1.7</a>
+        <a class="btn btn--fantasma btn--grande magnetico" href="#demo">Volver a la demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenedor pie__rejilla">
+    <div class="pie__marca">
+      <span class="nav__logo">
+        <svg viewBox="0 0 512 512" aria-hidden="true">
+          <rect width="512" height="512" rx="110" fill="url(#gLogo)"/>
+          <path d="M176,356 C160,316 154,246 156,192 C157,166 180,152 206,152 L318,152 C344,152 367,166 368,192 C370,250 366,298 362,328 C356,366 318,380 290,358 C268,340 272,310 296,302" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <p><strong>Digest</strong> · Diario de medicación, comidas y síntomas.<br>Documentación funcional v1.7 · octubre de 2026.</p>
+    </div>
+    <div class="pie__cols">
+      <div>
+        <h4>Producto</h4>
+        <a href="#demo">Demo interactiva</a>
+        <a href="#funciones">Pantallas</a>
+        <a href="#alertas">Alertas clínicas</a>
+        <a href="#informe">Informe</a>
+      </div>
+      <div>
+        <h4>Proyecto</h4>
+        <a href="#privacidad">Privacidad</a>
+        <a href="#tecnica">Ficha técnica</a>
+        <a href="#instalacion">Instalación</a>
+        <a href="documentacion/Digest-documentacion-v1.7.pdf">Documentación PDF</a>
+      </div>
+      <div>
+        <h4>Aviso</h4>
+        <p class="pie__aviso">No es un dispositivo médico ni sustituye al médico. Las alertas son orientativas y el informe lo genera el paciente.</p>
+      </div>
+    </div>
+  </div>
+  <div class="contenedor pie__base">
+    <span>© 2026 Digest · Salud Digestiva</span>
+    <span>Hecho con Kotlin, Jetpack Compose y una obsesión por lo local.</span>
+  </div>
+</footer>
+
+<script src="assets/demo-modelo.js"></script>
+<script src="assets/demo-ui.js"></script>
+<script src="assets/demo-ui2.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

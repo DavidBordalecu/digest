@@ -1,0 +1,55 @@
+name: Publicar la web en GitHub Pages
+
+# Publica el contenido de web/ como sitio estático.
+# Para activarlo: repositorio → Settings → Pages → Source: «GitHub Actions».
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "web/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un despliegue a la vez; si llega otro, cancela el anterior.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar el sitio
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          # La web es autocontenida: todo lo que necesita está dentro de web/.
+          cp -r web/. _site/
+          # Evita que GitHub procese el sitio con Jekyll.
+          touch _site/.nojekyll
+          echo "Archivos publicados:"
+          find _site -type f | sort
+
+      - name: Subir el artefacto
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Desplegar en GitHub Pages
+        id: despliegue
+        uses: actions/deploy-pages@v4
