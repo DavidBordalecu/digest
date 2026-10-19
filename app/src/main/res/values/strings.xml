@@ -6,6 +6,7 @@
     <string name="condicion_colitis_ulcerosa">Colitis ulcerosa</string>
     <string name="condicion_crohn">Enfermedad de Crohn</string>
     <string name="condicion_indeterminada">Colitis indeterminada</string>
+    <string name="condicion_colon_irritable">Colon irritable</string>
 
     <string name="afectacion_proctitis">Proctitis</string>
     <string name="afectacion_colitis_izquierda">Colitis izquierda</string>
@@ -191,6 +192,12 @@
     <string name="brote_severo">Brote severo</string>
     <string name="brote_no_aplica">No me aplica</string>
 
+    <!-- Control de síntomas en colon irritable (mismos niveles que el brote) -->
+    <string name="control_sin_molestias">Sin molestias</string>
+    <string name="control_molestias_leves">Molestias leves</string>
+    <string name="control_molestias_moderadas">Molestias moderadas</string>
+    <string name="control_molestias_intensas">Molestias intensas</string>
+
     <!-- Notificaciones -->
     <string name="canal_pendiente">Recordatorios de medicación</string>
     <string name="canal_pendiente_desc">Aviso a la hora de cada toma programada.</string>
@@ -211,11 +218,12 @@
 
     <!-- Bienvenida -->
     <string name="bienvenida_titulo">Digest</string>
-    <string name="bienvenida_subtitulo">Tu diario de medicación, comidas y síntomas para la enfermedad inflamatoria intestinal.</string>
+    <string name="bienvenida_subtitulo">Tu diario de medicación, comidas y síntomas para la enfermedad inflamatoria intestinal o el colon irritable.</string>
     <string name="bienvenida_condicion">¿Cuál es tu diagnóstico?</string>
     <string name="bienvenida_cu_desc">Afecta al colon y al recto.</string>
     <string name="bienvenida_crohn_desc">Puede afectar a cualquier parte del tubo digestivo.</string>
     <string name="bienvenida_indeterminada_desc">No está claro si es colitis o Crohn.</string>
+    <string name="bienvenida_colon_irritable_desc">Dolor o molestia abdominal con cambios en el tránsito, sin inflamación.</string>
     <string name="bienvenida_fecha_diagnostico">Año del diagnóstico</string>
     <string name="bienvenida_peso">Peso</string>
     <string name="bienvenida_altura">Altura</string>
@@ -259,6 +267,7 @@
     <string name="diario_mejora">¿La medicación te está mejorando?</string>
     <string name="diario_sensacion">¿Cómo te sientes en general?</string>
     <string name="diario_brote">Estado del brote</string>
+    <string name="diario_control_sintomas">Control de los síntomas</string>
     <string name="diario_hidratacion">Hidratación</string>
     <string name="diario_notas">Notas del día</string>
 

@@ -147,8 +147,13 @@ object AlertasClinicas {
         if (!hayAbundante) return null
         return SenalClinica(
             titulo = "Sangrado abundante",
-            explicacion = "Has registrado sangre abundante en las heces. " +
-                "En una enfermedad inflamatoria puede indicar que la mucosa está muy dañada.",
+            explicacion = if (c.condicion.esInflamatoria) {
+                "Has registrado sangre abundante en las heces. " +
+                    "En una enfermedad inflamatoria puede indicar que la mucosa está muy dañada."
+            } else {
+                "Has registrado sangre abundante en las heces. No es habitual en el colon " +
+                    "irritable y obliga a descartar otra causa, así que no conviene esperar."
+            },
             porque = "Sangre abundante registrada hoy",
             nivel = NivelUrgencia.URGENTE,
         )
@@ -159,8 +164,13 @@ object AlertasClinicas {
         if (gravedad < GRAVEDAD_INTENSA) return null
         return SenalClinica(
             titulo = "Fiebre alta",
-            explicacion = "La fiebre en una enfermedad inflamatoria puede indicar una infección " +
-                "sobreañadida o un absceso, y no solo un brote.",
+            explicacion = if (c.condicion.esInflamatoria) {
+                "La fiebre en una enfermedad inflamatoria puede indicar una infección " +
+                    "sobreañadida o un absceso, y no solo un brote."
+            } else {
+                "La fiebre no forma parte del colon irritable y puede indicar una infección " +
+                    "u otra causa que conviene valorar hoy."
+            },
             porque = "Has marcado la fiebre como intensa",
             nivel = NivelUrgencia.URGENTE,
         )
@@ -237,8 +247,13 @@ object AlertasClinicas {
         if (perdida < PESO_QUE_PREOCUPA) return null
         return SenalClinica(
             titulo = "Pérdida de peso relevante",
-            explicacion = "Has perdido un ${"%.1f".format(perdida)} % de tu peso en tres meses. " +
-                "En Crohn puede indicar malabsorción o un brote activo.",
+            explicacion = if (c.condicion.esInflamatoria) {
+                "Has perdido un ${"%.1f".format(perdida)} % de tu peso en tres meses. " +
+                    "En Crohn puede indicar malabsorción o un brote activo."
+            } else {
+                "Has perdido un ${"%.1f".format(perdida)} % de tu peso en tres meses. " +
+                    "No es habitual en el colon irritable y conviene descartar otra causa."
+            },
             porque = "Descenso de peso superior al 5 % en tres meses",
             nivel = NivelUrgencia.PRONTO,
         )

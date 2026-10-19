@@ -442,7 +442,10 @@ private fun peso(s: StringBuilder, i: InformePeriodo) {
     }
 
     private fun diario(s: StringBuilder, i: InformePeriodo) {
-        val conContenido = i.diario.filterValues { it.mejora != null || it.sensacion != null }
+        val conContenido = i.diario.filterValues {
+            it.mejora != null || it.sensacion != null ||
+                it.estadoBrote != null || it.hidratacion != null
+        }
         if (conContenido.isEmpty()) {
             s.appendLine("DIARIO")
             s.appendLine("  Sin anotaciones")
@@ -450,12 +453,17 @@ private fun peso(s: StringBuilder, i: InformePeriodo) {
         }
 
         s.appendLine("DIARIO")
+        val condicion = i.perfil?.condicion
+        val esColonIrritable = condicion == Condicion.COLON_IRRITABLE
         for (fecha in i.fechas) {
             val d = i.diario[fecha] ?: continue
             val partes = buildList {
                 d.mejora?.let { add("mejora: ${nombreMejora(it)}") }
                 d.sensacion?.let { add("sensación: ${nombreSensacion(it)}") }
-                d.estadoBrote?.let { add("brote: ${nombreBrote(it)}") }
+                d.estadoBrote?.let {
+                    val etiqueta = if (esColonIrritable) "control de síntomas" else "brote"
+                    add("$etiqueta: ${nombreBrote(it, condicion)}")
+                }
                 d.hidratacion?.let { add("hidratación: ${nombreHidratacion(it)}") }
             }
             if (partes.isNotEmpty()) {
@@ -493,6 +501,7 @@ private fun peso(s: StringBuilder, i: InformePeriodo) {
         Condicion.COLITIS_ULCEROSA -> "Colitis ulcerosa"
         Condicion.CROHN -> "Enfermedad de Crohn"
         Condicion.INDETERMINADA -> "Colitis indeterminada"
+        Condicion.COLON_IRRITABLE -> "Colon irritable"
     }
 
     internal fun nombreAfectacion(a: Afectacion) = when (a) {
@@ -524,13 +533,24 @@ private fun peso(s: StringBuilder, i: InformePeriodo) {
         SensacionGeneral.MUY_MAL -> "muy mal"
     }
 
-    internal fun nombreBrote(b: EstadoBrote) = when (b) {
-        EstadoBrote.EN_REMISION -> "en remisión"
-        EstadoBrote.LEVE -> "brote leve"
-        EstadoBrote.MODERADO -> "brote moderado"
-        EstadoBrote.SEVERO -> "brote severo"
-        EstadoBrote.NO_APLICA -> "no aplica"
-    }
+    internal fun nombreBrote(b: EstadoBrote, condicion: Condicion? = null) =
+        if (condicion == Condicion.COLON_IRRITABLE) {
+            when (b) {
+                EstadoBrote.EN_REMISION -> "sin molestias"
+                EstadoBrote.LEVE -> "molestias leves"
+                EstadoBrote.MODERADO -> "molestias moderadas"
+                EstadoBrote.SEVERO -> "molestias intensas"
+                EstadoBrote.NO_APLICA -> "no aplica"
+            }
+        } else {
+            when (b) {
+                EstadoBrote.EN_REMISION -> "en remisión"
+                EstadoBrote.LEVE -> "brote leve"
+                EstadoBrote.MODERADO -> "brote moderado"
+                EstadoBrote.SEVERO -> "brote severo"
+                EstadoBrote.NO_APLICA -> "no aplica"
+            }
+        }
 
     internal fun nombreHidratacion(h: NivelHidratacion) = when (h) {
         NivelHidratacion.NORMAL -> "normal"

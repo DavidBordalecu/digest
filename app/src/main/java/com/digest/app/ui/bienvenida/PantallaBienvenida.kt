@@ -84,9 +84,10 @@ fun PantallaBienvenida(
                 seleccionada = condicion == opcion,
                 alSeleccionar = {
                     condicion = opcion
-                    // La localización depende de la condición: se reinicia.
+                    // La localización y la cirugía dependen de la condición:
+                    // se reinician para no arrastrar datos de otra enfermedad.
                     afectaciones.clear()
-                    if (opcion.afectaIntestinoDelgado) afectaIntestinoDelgado = true
+                    afectaIntestinoDelgado = opcion.afectaIntestinoDelgado
                 },
             )
         }
@@ -120,7 +121,9 @@ fun PantallaBienvenida(
         }
 
         val condicionActual = condicion
-        if (condicionActual != null) {
+        // El colon irritable no tiene zonas de afectación ni antecedentes
+        // quirúrgicos que registrar: preguntarlos solo confunde.
+        if (condicionActual != null && condicionActual.esInflamatoria) {
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.bienvenida_afectacion),
@@ -218,6 +221,7 @@ private fun TarjetaCondicion(
                         Condicion.COLITIS_ULCEROSA -> R.string.bienvenida_cu_desc
                         Condicion.CROHN -> R.string.bienvenida_crohn_desc
                         Condicion.INDETERMINADA -> R.string.bienvenida_indeterminada_desc
+                        Condicion.COLON_IRRITABLE -> R.string.bienvenida_colon_irritable_desc
                     },
                 ),
                 style = MaterialTheme.typography.bodyMedium,

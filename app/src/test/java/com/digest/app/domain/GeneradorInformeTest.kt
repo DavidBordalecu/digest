@@ -279,6 +279,29 @@ class GeneradorInformeTest {
         assertTrue(texto.contains("brote: brote leve"))
     }
 
+    @Test
+    fun `en colon irritable el diario habla de control de sintomas`() {
+        val texto = GeneradorInforme.texto(
+            informe(
+                perfil = PerfilEntity(
+                    condicion = Condicion.COLON_IRRITABLE,
+                    afectaciones = emptyList(),
+                    pesoKg = null,
+                    alturaCm = null,
+                ),
+                diario = mapOf(
+                    hoy to DiarioEntity(
+                        fecha = hoy,
+                        estadoBrote = EstadoBrote.MODERADO,
+                    ),
+                ),
+            ),
+        )
+
+        assertTrue(texto.contains("control de síntomas: molestias moderadas"))
+        assertFalse(texto.contains("brote:"))
+    }
+
     // --- Señales ---
 
     @Test

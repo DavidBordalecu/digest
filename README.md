@@ -80,6 +80,11 @@ app/src/main/java/com/digest/app/
 └── ui/             Pantallas (hoy, medicamentos, comidas, diario, perfil)
 ```
 
+## Documentación
+
+- [Documentación funcional v1.7 (PDF)](documentacion/Digest-documentacion-v1.7.pdf)
+- [Documentación funcional v1.7 (Markdown editable)](documentacion/Digest-documentacion-v1.7.md)
+
 ## Desarrollo
 
 ```bash
@@ -106,7 +111,7 @@ se lee lo que verá el médico, sin instalar nada.
 
 ## Instalar en un móvil sin Play Store
 
-El APK firmado queda en `Digest-v1.6.apk`. Para instalarlo:
+El APK firmado queda en `Digest-v1.7.apk`. Para instalarlo:
 
 1. Pásalo al móvil (cable, tarjeta SD, Drive, correo…)
 2. Ábrelo desde el explorador de archivos

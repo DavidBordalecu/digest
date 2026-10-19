@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Digest · Documentación funcional 1.7</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 17mm 20mm 17mm;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    font-family: "Noto Sans", "DejaVu Sans", "Liberation Sans", sans-serif;
+    font-size: 10.2pt;
+    line-height: 1.55;
+    color: #1f2a28;
+    background: #ffffff;
+  }
+
+  h1, h2, h3, h4 { color: #0b5d52; line-height: 1.2; }
+  h2 {
+    font-size: 17pt;
+    margin: 26px 0 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #cfe3de;
+    break-after: avoid;
+  }
+  h3 {
+    font-size: 12.5pt;
+    margin: 18px 0 6px;
+    break-after: avoid;
+  }
+  p { margin: 0 0 9px; }
+  ul, ol { margin: 4px 0 11px; padding-left: 20px; }
+  li { margin-bottom: 4px; }
+  strong { color: #123f38; }
+  code {
+    font-family: "DejaVu Sans Mono", monospace;
+    font-size: 9pt;
+    background: #eef5f3;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  hr { border: 0; border-top: 1px solid #d8e5e1; margin: 20px 0; }
+
+  /* --- Portada --- */
+  .cover {
+    min-height: 245mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    break-after: page;
+  }
+  .cover-panel {
+    background: linear-gradient(145deg, #0b6b5f 0%, #084d45 100%);
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 34px 32px 30px;
+  }
+  .monogram {
+    width: 58px; height: 58px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 27pt; font-weight: 700;
+    margin-bottom: 26px;
+  }
+  .cover h1 {
+    color: #ffffff;
+    font-size: 46pt;
+    margin: 0 0 6px;
+    letter-spacing: -1px;
+  }
+  .cover .claim {
+    font-size: 17pt;
+    color: #cdece5;
+    margin: 0 0 30px;
+  }
+  .cover .version {
+    display: inline-block;
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: .4px;
+    background: #ffffff;
+    color: #0b5d52;
+    border-radius: 20px;
+    padding: 5px 14px;
+    margin-bottom: 18px;
+  }
+  .cover .audience {
+    font-size: 11.5pt;
+    color: #e6f5f1;
+    max-width: 125mm;
+    border-top: 1px solid rgba(255,255,255,0.22);
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .cover-meta {
+    margin-top: 18px;
+    font-size: 9.2pt;
+    color: #5b716c;
+  }
+
+  /* --- Contenido --- */
+  .toc {
+    background: #f3f8f6;
+    border: 1px solid #d5e6e1;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 18px 0 8px;
+    break-inside: avoid;
+  }
+  .toc h2 {
+    font-size: 12.5pt;
+    border: 0;
+    margin: 0 0 8px;
+    padding: 0;
+  }
+  .toc ol {
+    columns: 2;
+    column-gap: 26px;
+    margin: 0;
+    padding-left: 18px;
+    font-size: 9.4pt;
+  }
+  .toc li { margin-bottom: 3px; }
+
+  .lead {
+    font-size: 11pt;
+    color: #36504b;
+    margin-bottom: 14px;
+  }
+
+  .note, .warning {
+    border-radius: 8px;
+    padding: 11px 14px;
+    margin: 12px 0;
+    font-size: 9.5pt;
+    break-inside: avoid;
+  }
+  .note {
+    background: #eef7f4;
+    border-left: 4px solid #0b6b5f;
+  }
+  .warning {
+    background: #fff5e8;
+    border-left: 4px solid #b26a00;
+  }
+  .note p, .warning p { margin: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px;
+    font-size: 8.9pt;
+    break-inside: avoid;
+  }
+  th {
+    background: #0b6b5f;
+    color: #ffffff;
+    text-align: left;
+    padding: 7px 8px;
+    font-weight: 600;
+  }
+  td {
+    border: 1px solid #d5e3df;
+    padding: 6px 8px;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #f5faf8; }
+
+  .pill-row { margin: 10px 0 4px; }
+  .pill {
+    display: inline-block;
+    background: #e6f3ef;
+    color: #0b5d52;
+    border: 1px solid #c8e0da;
+    border-radius: 16px;
+    padding: 2px 10px;
+    font-size: 8.8pt;
+    margin: 0 5px 5px 0;
+  }
+
+  .keep { break-inside: avoid; }
+  .small { font-size: 9pt; color: #4c625d; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="cover-panel">
+    <div class="monogram">D</div>
+    <h1>Digest</h1>
+    <p class="claim">Diario de medicación, comidas y síntomas</p>
+    <div class="version">DOCUMENTACIÓN FUNCIONAL · VERSIÓN 1.7</div>
+    <p class="audience">
+      Aplicación Android para personas con enfermedad inflamatoria intestinal
+      o colon irritable.
+    </p>
+  </div>
+  <p class="cover-meta">Actualizado el 19 de octubre de 2026 · com.digest.app</p>
+</section>
+
+<div class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li>Qué es Digest</li>
+    <li>Para quién es</li>
+    <li>Privacidad y funcionamiento</li>
+    <li>Primer arranque</li>
+    <li>Pantallas de la app</li>
+    <li>Alertas clínicas</li>
+    <li>Informe para el médico</li>
+    <li>Diferencias según el diagnóstico</li>
+    <li>Novedades de la versión 1.7</li>
+    <li>Ficha técnica</li>
+    <li>Instalación</li>
+    <li>Límites y seguridad</li>
+    <li>Estado del proyecto</li>
+    <li>Glosario</li>
+  </ol>
+</div>
+
+<h2>1. Qué es Digest</h2>
+<p class="lead">
+  Digest es una aplicación Android que ayuda al paciente a registrar, en un mismo
+  sitio, lo que le pasa cada día: la medicación que toma, las comidas que hace,
+  los síntomas que nota y cómo evoluciona. Con esos datos construye un historial
+  ordenado y un informe que el paciente puede enviar a su médico.
+</p>
+<p>
+  La app no diagnostica ni decide un tratamiento. Su objetivo es resolver un
+  problema muy concreto: que el paciente recuerde y pueda contar con precisión
+  lo que ha pasado entre una consulta y la siguiente.
+</p>
+
+<h3>Principios de diseño</h3>
+<ul>
+  <li><strong>Todo local.</strong> Los datos de salud se guardan solo en el teléfono. No hay servidor, no hay cuenta y la app funciona sin conexión.</li>
+  <li><strong>La enfermedad es un dato, no una suposición.</strong> El diagnóstico elegido decide qué zonas se preguntan, qué síntomas se ofrecen y cómo se nombra el control de la enfermedad.</li>
+  <li><strong>Registrar rápido.</strong> Los cuestionarios piden lo mínimo accionable y las comidas anteriores se pueden repetir con un toque.</li>
+  <li><strong>Avisar sin prometer milagros.</strong> Si el paciente no concede el permiso de alarma exacta, la app degrada a una alarma inexacta en lugar de dejar de avisar.</li>
+  <li><strong>Explicar las alertas.</strong> Cada señal clínica dice qué ha detectado y por qué conviene consultar. Una alerta sin motivo se acaba ignorando.</li>
+</ul>
+
+<h2>2. Para quién es</h2>
+<p>Digest cubre cuatro diagnósticos:</p>
+<div class="pill-row">
+  <span class="pill">Colitis ulcerosa</span>
+  <span class="pill">Enfermedad de Crohn</span>
+  <span class="pill">Colitis indeterminada</span>
+  <span class="pill">Colon irritable</span>
+</div>
+<p>
+  Los tres primeros son enfermedades inflamatorias intestinales y comparten
+  buena parte del seguimiento. El colon irritable no es una enfermedad
+  inflamatoria, así que la app adapta el alta, el cuestionario de síntomas y el
+  lenguaje del control diario.
+</p>
+
+<h2>3. Privacidad y funcionamiento</h2>
+<ul>
+  <li>Los datos se guardan en la base de datos privada de la app, en el propio dispositivo.</li>
+  <li>No se envía información a ningún servidor.</li>
+  <li>No hay registro, cuenta de usuario ni sincronización en la nube.</li>
+  <li>La app funciona sin conexión a internet.</li>
+  <li>Los informes y documentos solo salen del teléfono cuando el paciente decide compartirlos.</li>
+  <li>Si se desinstala la app o se cambia de móvil, los datos se pierden: todavía no existe copia de seguridad.</li>
+</ul>
+
+<h2>4. Primer arranque</h2>
+<p>La primera vez que se abre la app aparece una pantalla de alta con estos pasos:</p>
+<ol>
+  <li><strong>Elegir el diagnóstico</strong> entre colitis ulcerosa, enfermedad de Crohn, colitis indeterminada o colon irritable.</li>
+  <li><strong>Añadir datos opcionales:</strong> año del diagnóstico, peso y altura.</li>
+  <li><strong>Completar el perfil según el diagnóstico:</strong>
+    <ul>
+      <li>En las enfermedades inflamatorias: zonas afectadas y antecedentes quirúrgicos (ostomía o resección intestinal).</li>
+      <li>En colon irritable: estos apartados no aparecen, porque no forman parte de la enfermedad.</li>
+    </ul>
+  </li>
+  <li><strong>Pulsar “Empezar”.</strong> El perfil se guarda y la app abre la pantalla de Hoy.</li>
+</ol>
+<p>El diagnóstico determina desde ese momento:</p>
+<ul>
+  <li>Qué zonas del tubo digestivo se ofrecen.</li>
+  <li>Qué síntomas se preguntan a diario.</li>
+  <li>Si el bloque de control se llama “Estado del brote” o “Control de los síntomas”.</li>
+  <li>Cómo se redactan algunas alertas y el informe médico.</li>
+</ul>
+
+<h2>5. Pantallas de la app</h2>
+
+<h3>5.1 Hoy</h3>
+<p>Es la pantalla de entrada. Reúne lo que el paciente necesita en el día:</p>
+<ul>
+  <li><strong>Fecha y diagnóstico</strong> del perfil.</li>
+  <li><strong>Aviso de permisos</strong> si faltan notificaciones o alarmas exactas.</li>
+  <li><strong>Tomas de hoy:</strong> medicación pendiente, tomada u omitida. Si no hay medicación, explica cómo añadirla.</li>
+  <li><strong>Comidas de hoy:</strong> resumen de lo registrado y acceso para añadir.</li>
+  <li><strong>¿Cómo estás hoy?:</strong> cuestionario de síntomas adaptado al diagnóstico. Cada síntoma se marca con una intensidad de 1 a 5; al volver a pulsarlo sube la intensidad y, en el máximo, se quita.</li>
+  <li><strong>Control de la comida:</strong> si han pasado dos horas desde una comida, pregunta si ha notado algún cambio.</li>
+  <li><strong>Compartir mi historia con el médico:</strong> genera el resumen y lo envía junto con los informes adjuntos.</li>
+</ul>
+<p>Los síntomas que se muestran cambian según el diagnóstico:</p>
+<table>
+  <thead>
+    <tr><th style="width:26%">Diagnóstico</th><th>Síntomas que se ofrecen</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Colitis ulcerosa</td>
+      <td>Diarrea, dolor abdominal, tenesmo, sangre en heces, mucosidad, distensión, fatiga, fiebre, náuseas, pérdida de apetito, pérdida de peso, desnutrición, aftas, dolor articular, manchas en la piel y ojo rojo.</td>
+    </tr>
+    <tr>
+      <td>Crohn y colitis indeterminada</td>
+      <td>Los mismos síntomas y, además, manifestaciones perianales: fisura, fístula, absceso, dolor o supuración e inflamación externa.</td>
+    </tr>
+    <tr>
+      <td>Colon irritable</td>
+      <td>Diarrea, dolor abdominal, mucosidad, distensión, fatiga y náuseas. Se excluyen de forma deliberada la sangre, la fiebre, la pérdida de peso y las manifestaciones extraintestinales, porque no forman parte del cuadro y obligarían a descartar otra causa.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>5.2 Medicación</h3>
+<p>Permite crear y mantener la agenda de fármacos y suplementos:</p>
+<ul>
+  <li>Nombre, dosis, presentación e instrucciones de uso (por ejemplo, “con comida” o “en ayunas”).</li>
+  <li>Pauta con varios horarios al día y días concretos de la semana.</li>
+  <li>Cada medicación se muestra con sus horarios para ver de un vistazo qué toca.</li>
+</ul>
+<p>Los avisos de toma funcionan con <code>AlarmManager</code>:</p>
+<ul>
+  <li>A la hora programada salta una notificación con acciones directas <strong>Tomada</strong> y <strong>Omitir</strong>.</li>
+  <li>Si la toma sigue pendiente, <strong>20 minutos después</strong> llega un aviso de refuerzo.</li>
+  <li>En Android 12+ se usa alarma exacta si el paciente concede el permiso; si no, se programa una alarma inexacta para que el aviso llegue igualmente, aunque con unos minutos de retraso.</li>
+  <li>Las alarmas se reprograman al abrir la app y después de reiniciar el teléfono, porque Android las borra al apagar.</li>
+</ul>
+
+<h3>5.3 Comidas</h3>
+<ul>
+  <li>Registro del tipo de comida y la hora.</li>
+  <li>Anotación de lo que se ha comido, no solo la categoría.</li>
+  <li>Las comidas anteriores se ofrecen para repetirlas con un toque.</li>
+  <li>Dos horas después, la app pregunta si ha habido algún cambio. La respuesta se cruza con la comida para construir la relación entre alimentos y síntomas.</li>
+</ul>
+
+<h3>5.4 Diario</h3>
+<p>El diario combina el registro del cuerpo con el estado general del día:</p>
+<ul>
+  <li><strong>Registro del cuerpo:</strong> deposiciones con escala de Bristol y cantidad de sangre; episodios de dolor abdominal con intensidad, tipo y localización; volumen de nutrición enteral.</li>
+  <li><strong>Resumen de hoy:</strong> lista de síntomas marcados con su intensidad; se puede ajustar desde aquí.</li>
+  <li><strong>¿La medicación te está mejorando?</strong> Sin mejoras, poca mejora, mejora clara, gran mejora, empeora o no aplica.</li>
+  <li><strong>¿Cómo te sientes en general?</strong> Muy bien, bien, regular, mal o muy mal.</li>
+  <li><strong>Control de la enfermedad:</strong> en colitis, Crohn e indeterminada aparece “Estado del brote” (En remisión, Brote leve, Brote moderado, Brote severo, No me aplica). En colon irritable aparece “Control de los síntomas” (Sin molestias, Molestias leves, Molestias moderadas, Molestias intensas, No me aplica).</li>
+  <li><strong>Hidratación:</strong> normal, insuficiente o excesiva.</li>
+  <li><strong>Notas del día.</strong></li>
+  <li><strong>Generación del informe</strong> en texto o CSV para periodos de 7, 15 o 30 días.</li>
+</ul>
+
+<h3>5.5 Perfil</h3>
+<p>Desde el perfil se consulta y completa la ficha del paciente:</p>
+<ul>
+  <li>Diagnóstico y zonas afectadas.</li>
+  <li>Peso, altura e IMC.</li>
+  <li>Intervalo habitual entre consultas (por defecto, 6 meses).</li>
+  <li>Antecedentes quirúrgicos y ostomías.</li>
+  <li>Historial de cirugías.</li>
+  <li>Documentos e informes médicos.</li>
+  <li>Directorio de profesionales.</li>
+</ul>
+
+<h3>5.6 Documentos e informes médicos</h3>
+<p>El paciente puede adjuntar análisis, colonoscopias, biopsias, pruebas de imagen y otros informes:</p>
+<ul>
+  <li>El archivo se <strong>copia dentro de la carpeta privada de la app</strong>, no se guarda como una simple referencia. Así el informe sigue disponible aunque el paciente borre el original de Descargas.</li>
+  <li>Cada documento guarda nombre, tipo, fecha, notas, tamaño y formato.</li>
+  <li>Se puede abrir, compartir o borrar.</li>
+  <li>Se pueden compartir solo los archivos seleccionados o todos a la vez.</li>
+  <li>La fecha de la última prueba de cada tipo se muestra en el perfil.</li>
+</ul>
+
+<h3>5.7 Directorio de profesionales</h3>
+<p>
+  Incluye gastroenterología y nutrición, y prioriza a los profesionales
+  especializados en enfermedad inflamatoria intestinal. Los datos del directorio
+  son ficticios y están incluidos a modo de ejemplo: no corresponden a personas
+  ni centros reales.
+</p>
+
+<h2>6. Alertas clínicas</h2>
+<p>
+  Las alertas reconocen patrones que en la práctica aconsejan consultar.
+  <strong>No son un diagnóstico.</strong> Cada una explica qué se ha detectado y
+  por qué.
+</p>
+<p>Hay tres niveles:</p>
+<ul>
+  <li><strong>Normal:</strong> no hace falta adelantar la consulta.</li>
+  <li><strong>Pronto:</strong> conviene pedir cita en los próximos días.</li>
+  <li><strong>Urgente:</strong> hay que contactar hoy con el centro de salud.</li>
+</ul>
+<table>
+  <thead>
+    <tr><th style="width:30%">Señal</th><th>Cuándo salta</th><th style="width:14%">Nivel</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Sangrado abundante</td><td>Sangre abundante en heces registrada hoy</td><td>Urgente</td></tr>
+    <tr><td>Fiebre alta</td><td>Fiebre marcada con intensidad 4 o más sobre 5</td><td>Urgente</td></tr>
+    <tr><td>Dolor abdominal intenso</td><td>Dolor marcado con intensidad 4 o más sobre 5</td><td>Urgente</td></tr>
+    <tr><td>Posible absceso o fístula perianal</td><td>Manifestación perianal nueva o absceso moderado en Crohn o indeterminada</td><td>Urgente</td></tr>
+    <tr><td>Muchas deposiciones diarreicas</td><td>8 o más deposiciones diarreicas en el día</td><td>Urgente</td></tr>
+    <tr><td>Síntoma que se mantiene</td><td>Un síntoma lleva 14 días seguidos o más</td><td>Pronto</td></tr>
+    <tr><td>Pérdida de peso relevante</td><td>Más del 5 % del peso en tres meses</td><td>Pronto</td></tr>
+    <tr><td>Varios síntomas a la vez</td><td>3 o más síntomas con uno moderado, 5 o más, o sensación general mala</td><td>Pronto</td></tr>
+    <tr><td>Toca revisión</td><td>Ha pasado el 75 % del intervalo habitual entre consultas</td><td>Pronto</td></tr>
+  </tbody>
+</table>
+<div class="note">
+  <p>
+    En colon irritable se mantienen las alertas que siguen teniendo sentido, pero
+    se adapta su explicación: la sangre, la fiebre y la pérdida de peso no son
+    habituales en esta enfermedad y por eso obligan a descartar otra causa.
+  </p>
+</div>
+
+<h2>7. Informe para el médico</h2>
+<p>El informe se genera desde el Diario y puede compartirse en dos formatos.</p>
+
+<h3>Informe de texto</h3>
+<p>Incluye, cuando hay datos:</p>
+<ul>
+  <li><strong>Paciente:</strong> diagnóstico, zonas afectadas, ostomía, resección ileocecal y última consulta.</li>
+  <li><strong>Medicación:</strong> tomas programadas, tomadas, omitidas, pendientes y adherencia por fármaco.</li>
+  <li><strong>Síntomas:</strong> frecuencia, media de intensidad y detalle día a día.</li>
+  <li><strong>Deposiciones:</strong> número, media de Bristol, sangre y días con diarrea.</li>
+  <li><strong>Dolor abdominal:</strong> episodios, intensidad, tipo y localización.</li>
+  <li><strong>Nutrición enteral:</strong> producto, volumen y tipo.</li>
+  <li><strong>Comidas y reacción:</strong> qué se comió y si hubo cambios después.</li>
+  <li><strong>Peso:</strong> evolución y variación en el periodo.</li>
+  <li><strong>Diario:</strong> mejora con la medicación, sensación general, control de la enfermedad e hidratación.</li>
+  <li><strong>Informes médicos adjuntos:</strong> archivos incluidos.</li>
+  <li><strong>Señales de alerta registradas</strong> con su nivel y motivo.</li>
+</ul>
+<p>
+  El informe termina con una advertencia: lo genera el paciente a partir de sus
+  anotaciones y no es una valoración médica.
+</p>
+
+<h3>CSV de síntomas</h3>
+<p>Una fila por día y síntoma, con estas columnas:</p>
+<p><code>fecha; síntoma; intensidad; deposiciones; sangre; bristol</code></p>
+<p>Sirve para abrir los datos en una hoja de cálculo y revisar tendencias.</p>
+
+<h3>Compartir mi historia</h3>
+<p>El botón <strong>“Compartir mi historia con el médico”</strong> prepara en un solo envío:</p>
+<ul>
+  <li>El resumen escrito del periodo elegido (7, 15 o 30 días).</li>
+  <li>Todos los informes adjuntos.</li>
+</ul>
+<p>Si no hay documentos adjuntos, se envía solo el resumen y la app lo indica antes de compartir.</p>
+
+<h2>8. Diferencias según el diagnóstico</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width:17%"></th>
+      <th>Colitis ulcerosa</th>
+      <th>Enfermedad de Crohn</th>
+      <th>Colitis indeterminada</th>
+      <th>Colon irritable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Tipo</strong></td><td>Inflamatoria</td><td>Inflamatoria</td><td>Inflamatoria</td><td>No inflamatoria</td></tr>
+    <tr><td><strong>Localización</strong></td><td>Colon y recto</td><td>Cualquier parte del tubo digestivo</td><td>No está claro si es colitis o Crohn</td><td>Intestino, sin inflamación</td></tr>
+    <tr><td><strong>Zonas en el alta</strong></td><td>Proctitis, colitis izquierda, colitis extensa, pancolitis</td><td>Ileítis, ileocolitis, colitis de Crohn, gastroduodenal, perianal</td><td>Todas las anteriores</td><td>No se preguntan</td></tr>
+    <tr><td><strong>Síntomas perianales</strong></td><td>No</td><td>Sí</td><td>Sí</td><td>No</td></tr>
+    <tr><td><strong>Sangre, fiebre y pérdida de peso</strong></td><td>Sí</td><td>Sí</td><td>Sí</td><td>No</td></tr>
+    <tr><td><strong>Bloque de control</strong></td><td>Estado del brote</td><td>Estado del brote</td><td>Estado del brote</td><td>Control de los síntomas</td></tr>
+  </tbody>
+</table>
+
+<h2>9. Novedades de la versión 1.7</h2>
+<ul>
+  <li><strong>Colon irritable en el alta inicial</strong>, con su propia descripción.</li>
+  <li><strong>Alta adaptada:</strong> al elegir colon irritable no se preguntan zonas afectadas ni antecedentes quirúrgicos.</li>
+  <li><strong>Cuestionario de síntomas propio:</strong> se excluyen los signos de alarma que no pertenecen al cuadro y se mantienen los síntomas habituales.</li>
+  <li><strong>Control de los síntomas:</strong> el Diario y el informe usan “Sin molestias / Molestias leves / Moderadas / Intensas” en lugar de “brote” y “remisión”.</li>
+  <li><strong>Alertas redactadas para colon irritable</strong> cuando la señal implica descartar otra causa.</li>
+  <li><strong>Corrección de estado:</strong> al cambiar de diagnóstico ya no se arrastra la marca de ostomía de una selección anterior.</li>
+  <li><strong>Informe más completo:</strong> las anotaciones que solo contienen estado del brote o hidratación ya no se pierden; antes podían aparecer como “Sin anotaciones”.</li>
+</ul>
+
+<h2>10. Ficha técnica</h2>
+<table>
+  <tbody>
+    <tr><th style="width:38%">Nombre</th><td>Digest</td></tr>
+    <tr><th>Paquete</th><td><code>com.digest.app</code></td></tr>
+    <tr><th>Versión</th><td>1.7 (<code>versionCode 7</code>)</td></tr>
+    <tr><th>Plataforma</th><td>Android 8.0 o superior (<code>minSdk 26</code>)</td></tr>
+    <tr><th>SDK de compilación y objetivo</th><td>36</td></tr>
+    <tr><th>Lenguaje</th><td>Kotlin 2.3.20</td></tr>
+    <tr><th>Interfaz</th><td>Jetpack Compose + Material 3</td></tr>
+    <tr><th>Arquitectura</th><td>MVVM con <code>StateFlow</code></td></tr>
+    <tr><th>Persistencia</th><td>Room 2.8.5, 15 tablas, base de datos versión 4</td></tr>
+    <tr><th>Avisos</th><td><code>AlarmManager</code> + <code>NotificationManager</code></td></tr>
+    <tr><th>Inyección de dependencias</th><td>Manual, sin Hilt</td></tr>
+    <tr><th>Sistema de compilación</th><td>AGP 9.0.1</td></tr>
+    <tr><th>Tamaño del APK</th><td>1,8 MB</td></tr>
+    <tr><th>Firma</th><td><code>CN=Digest, OU=Salud Digestiva, O=Digest, L=Madrid, C=ES</code></td></tr>
+    <tr><th>SHA-256 del APK 1.7</th><td style="font-size:8pt"><code>46066b32485859e40ea10dbb652d3d7d18b2a4036f880e973cca8f063849636c</code></td></tr>
+  </tbody>
+</table>
+
+<h2>11. Instalación</h2>
+<p>El APK firmado está en:</p>
+<p><code>Digest-v1.7.apk</code></p>
+<p>Pasos para instalarlo en un móvil:</p>
+<ol>
+  <li>Pasar el archivo al teléfono (cable, tarjeta SD, Drive, correo…).</li>
+  <li>Abrirlo desde el explorador de archivos.</li>
+  <li>Conceder el permiso de <strong>“instalar apps de orígenes desconocidos”</strong> si Android lo pide.</li>
+  <li>Confirmar en <strong>Play Protect</strong> que se confía en el archivo. Es habitual en cualquier APK que no venga de la tienda.</li>
+</ol>
+<div class="note">
+  <p>
+    El APK está firmado con la misma clave que las versiones anteriores, así que
+    se puede instalar encima de la 1.6 sin desinstalar y conservando los datos.
+  </p>
+</div>
+
+<h2>12. Límites y seguridad</h2>
+<ul>
+  <li><strong>No es un dispositivo médico ni sustituye al médico.</strong> No diagnostica, no ajusta tratamientos y no interpreta los datos.</li>
+  <li><strong>Las alertas son orientativas.</strong> Reconocen patrones, pero no conocen el contexto completo del paciente.</li>
+  <li><strong>Los avisos dependen de Android.</strong> Si se deniegan permisos, se activa el ahorro extremo de batería o el fabricante restringe las alarmas, un aviso puede retrasarse o no llegar. La app degrada a alarmas inexactas cuando no puede usar exactas.</li>
+  <li><strong>Todo está en el teléfono.</strong> No hay copia de seguridad en la nube. Si se pierde o se cambia el dispositivo, o se desinstala la app, los datos no se pueden recuperar.</li>
+  <li><strong>El informe lo genera el paciente.</strong> Es un resumen de lo anotado, no una historia clínica oficial.</li>
+</ul>
+
+<h2>13. Estado del proyecto</h2>
+<p>
+  Funciona de extremo a extremo: alta del paciente, medicación con horarios,
+  avisos, registro de tomas desde la notificación, comidas con control posterior,
+  síntomas, deposiciones, dolor, nutrición enteral, documentos, señales de alarma
+  e informe exportable.
+</p>
+<p>Pendiente:</p>
+<ul>
+  <li>Publicación en Google Play Store (requiere cuenta de desarrollador y política de privacidad).</li>
+  <li>Copia de seguridad y restauración de datos.</li>
+  <li>Cuestionario de calidad de vida validado: aparcado por la licencia del SIBDQ.</li>
+</ul>
+
+<h2>14. Glosario</h2>
+<ul>
+  <li><strong>EII:</strong> enfermedad inflamatoria intestinal. Agrupa la colitis ulcerosa, la enfermedad de Crohn y la colitis indeterminada.</li>
+  <li><strong>Colitis ulcerosa:</strong> inflamación continua del colon y el recto.</li>
+  <li><strong>Enfermedad de Crohn:</strong> inflamación que puede afectar a cualquier parte del tubo digestivo, con frecuencia de forma discontinua.</li>
+  <li><strong>Colitis indeterminada:</strong> inflamación del colon que no encaja con claridad en colitis ulcerosa ni en Crohn.</li>
+  <li><strong>Colon irritable:</strong> trastorno funcional del intestino, sin inflamación demostrable, con dolor o molestia y cambios en el tránsito.</li>
+  <li><strong>Brote:</strong> periodo de actividad de una enfermedad inflamatoria intestinal.</li>
+  <li><strong>Remisión:</strong> periodo sin actividad inflamatoria relevante.</li>
+  <li><strong>Escala de Bristol:</strong> clasificación de la consistencia de las heces en siete tipos.</li>
+  <li><strong>Tenesmo:</strong> sensación de necesitar ir al baño sin conseguir evacuar.</li>
+  <li><strong>Nutrición enteral:</strong> alimentación administrada por sonda o por vía digestiva.</li>
+  <li><strong>Ostomía:</strong> salida artificial del intestino a través de la pared abdominal.</li>
+  <li><strong>Resección ileocecal:</strong> extirpación quirúrgica de la parte final del íleon y del inicio del colon.</li>
+  <li><strong>FODMAP:</strong> conjunto de hidratos de carbono fermentables que algunas personas con colon irritable toleran peor.</li>
+</ul>
+
+<p class="small" style="margin-top:24px;border-top:1px solid #d8e5e1;padding-top:10px;">
+  Documento funcional de Digest · Versión 1.7 · Octubre de 2026
+</p>
+
+</body>
+</html>

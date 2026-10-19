@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.digest.app.R
+import com.digest.app.model.Condicion
 import com.digest.app.model.EstadoBrote
 import com.digest.app.model.NivelHidratacion
 import com.digest.app.model.NivelMejora
@@ -183,11 +184,20 @@ fun PantallaDiario(modifier: Modifier = Modifier) {
             alSeleccionar = viewModel::elegirSensacion,
         )
 
+        // En colon irritable no se habla de brote, sino de control de los
+        // síntomas: los niveles son los mismos, cambia cómo se nombran.
+        val condicion = estado.perfil?.condicion
         Grupo(
-            titulo = stringResource(R.string.diario_brote),
+            titulo = stringResource(
+                if (condicion == Condicion.COLON_IRRITABLE) {
+                    R.string.diario_control_sintomas
+                } else {
+                    R.string.diario_brote
+                },
+            ),
             opciones = EstadoBrote.entries,
             seleccionado = estado.estadoBrote,
-            etiqueta = { it.displayName },
+            etiqueta = { it.etiqueta(condicion) },
             alSeleccionar = viewModel::elegirBrote,
         )
 

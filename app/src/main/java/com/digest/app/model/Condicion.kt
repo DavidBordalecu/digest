@@ -4,16 +4,26 @@ import androidx.annotation.StringRes
 import com.digest.app.R
 
 /**
- * Enfermedad inflamatoria intestinal que lleva el paciente.
+ * Diagnóstico digestivo que lleva el paciente.
  *
- * La app cubre las tres porque comparten el 90% del modelo de datos;
- * lo que las diferencia son los cuestionarios de síntomas y los datos de
- * diagnóstico, que se derivan de aquí.
+ * La app cubre las tres enfermedades inflamatorias intestinales y el colon
+ * irritable porque comparten el 90% del modelo de datos; lo que las diferencia
+ * son los cuestionarios de síntomas y los datos de diagnóstico, que se derivan
+ * de aquí.
  */
 enum class Condicion(@StringRes val displayName: Int) {
     COLITIS_ULCEROSA(R.string.condicion_colitis_ulcerosa),
     CROHN(R.string.condicion_crohn),
-    INDETERMINADA(R.string.condicion_indeterminada);
+    INDETERMINADA(R.string.condicion_indeterminada),
+    COLON_IRRITABLE(R.string.condicion_colon_irritable);
+
+    /**
+     * El colon irritable no es una enfermedad inflamatoria: no tiene zonas
+     * de afectación ni antecedentes quirúrgicos propios, y su cuestionario
+     * excluye los signos que obligan a descartar otra cosa.
+     */
+    val esInflamatoria: Boolean
+        get() = this != COLON_IRRITABLE
 
     /** El íleon solo puede estar afectado en Crohn o en una indeterminada. */
     val afectaIntestinoDelgado: Boolean

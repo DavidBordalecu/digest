@@ -28,8 +28,8 @@ android {
         // La versión va dentro de la app y no solo en el nombre del archivo: es
         // la que ve el paciente en ajustes y la que usa Play para ordenar
         // las actualizaciones. Un `versionCode` repetido impide subir.
-        versionCode = 6
-        versionName = "1.6"
+        versionCode = 7
+        versionName = "1.7"
     }
 
     signingConfigs {

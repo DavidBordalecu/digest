@@ -47,11 +47,26 @@ enum class TipoDieta(@StringRes val displayName: Int) {
 /**
  * Estado general de la enfermedad ese día. Ayuda a detectar fases de brote
  * en el histórico junto con los síntomas.
+ *
+ * En el colon irritable no existe el concepto de brote ni de remisión: se
+ * habla de control de los síntomas. Los mismos niveles sirven para ambos
+ * casos, pero cambian las etiquetas que ve el paciente.
  */
-enum class EstadoBrote(@StringRes val displayName: Int) {
-    EN_REMISION(R.string.brote_remision),
-    LEVE(R.string.brote_leve),
-    MODERADO(R.string.brote_moderado),
-    SEVERO(R.string.brote_severo),
-    NO_APLICA(R.string.brote_no_aplica),
+enum class EstadoBrote(
+    @StringRes val displayName: Int,
+    @StringRes val displayNameColonIrritable: Int,
+) {
+    EN_REMISION(R.string.brote_remision, R.string.control_sin_molestias),
+    LEVE(R.string.brote_leve, R.string.control_molestias_leves),
+    MODERADO(R.string.brote_moderado, R.string.control_molestias_moderadas),
+    SEVERO(R.string.brote_severo, R.string.control_molestias_intensas),
+    NO_APLICA(R.string.brote_no_aplica, R.string.brote_no_aplica);
+
+    /** Etiqueta que corresponde al diagnóstico del paciente. */
+    fun etiqueta(condicion: Condicion?): Int =
+        if (condicion == Condicion.COLON_IRRITABLE) {
+            displayNameColonIrritable
+        } else {
+            displayName
+        }
 }
